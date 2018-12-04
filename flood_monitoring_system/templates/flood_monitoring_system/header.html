@@ -2,29 +2,24 @@
     <head>
         {% load staticfiles %}
 
-        <!-- META-->
-        <title>Flood Monitoring System</title>
-        <meta charset="utf-8">
-        <meta content="width=device-width, initial-scale=1.0" name="viewport">
-        <meta content="" name="keywords">
-        <meta content="" name="description">
+      <!-- Title and Meta -->
+      <title>Flood Monitoring System</title>
+      <link rel="icon" href="{% static 'images/favicon.ico' %}">
+	  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-        <!-- Favicon -->
-        <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
+	  <!-- Web Fonts  -->
+      <link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
 
-        <!-- Google Fonts -->
+      <!-- Libs -->
+	  <link rel="stylesheet" href="{% static 'lib/bootstrap/css/bootstrap.css' %}" />
+      <link rel="stylesheet" href="{% static 'lib/fontawesome/css/all.min.css' %}" />
+      <script src="{% static 'lib/modernizr/modernizr.js' %}"></script>
+      <script src="{% static 'lib/jquery/jquery.js' %}"></script>
+      <script src="{% static 'lib/bootstrap/js/bootstrap.js' %}"></script>
+      <script src="{% static 'lib/nanoscroller/nanoscroller.js' %}"></script>
 
-        <!-- Bootstrap CSS File -->
-        <link href="{% static 'lib/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
-
-        <!-- Main Stylesheet File -->
+	  <!-- Default css and js -->
         <link href="{% static 'css/main.css' %}" rel="stylesheet">
-
-        <!-- JavaScript Libraries -->
-        <script src="{% static 'lib/jquery-3.3.1/jquery-3.3.1.min.js'%}"></script>
-        <script src="{% static 'lib/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
-
-        <!-- Main JavaScript File -->
         <script src="{% static 'js/main.js'%}"></script>
 
         <!-- Web Page Unique header content -->
@@ -33,8 +28,123 @@
     </head>
     <body>
         <!--navbar-->
-          {% block content %}
-          {% endblock %}
+        <section class="body">
+           <!-- start: header -->
+           <header class="header">
+               <div class="logo-container">
+                   <a href="../" class="logo">
+                       <img src="{% static 'images/logo.png' %}" height="35" alt="JSOFT Admin" />
+                   </a>
+                   <div class="visible-xs toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html" data-fire-event="sidebar-left-opened">
+                       <i class="fa fa-bars" aria-label="Toggle sidebar"></i>
+                   </div>
+               </div>
+               <!-- start: search & user box -->
+               <div class="header-right">
+                   <ul class="notifications">
+                       <li>
+                           <a href="#" class="dropdown-toggle notification-icon" data-toggle="dropdown">
+                           <i class="fa fa-bell"></i>
+                           <span class="badge">3</span>
+                           </a>
+                           <div class="dropdown-menu notification-menu">
+                               <div class="notification-title">
+                                   <span class="pull-right label label-default">3</span>
+                                   Alerts
+                               </div>
+                               <div class="content">
+                                   <ul>
+                                       <li>
+                                           <a href="#" class="clearfix">
+                                               <div class="image">
+                                                   <i class="fa fa-thumbs-down bg-danger"></i>
+                                               </div>
+                                               <span class="title">Server is Down!</span>
+                                               <span class="message">Just now</span>
+                                           </a>
+                                       </li>
+                                       <li>
+                                           <a href="#" class="clearfix">
+                                               <div class="image">
+                                                   <i class="fa fa-lock bg-warning"></i>
+                                               </div>
+                                               <span class="title">User Locked</span>
+                                               <span class="message">15 minutes ago</span>
+                                           </a>
+                                       </li>
+                                       <li>
+                                           <a href="#" class="clearfix">
+                                               <div class="image">
+                                                   <i class="fa fa-signal bg-success"></i>
+                                               </div>
+                                               <span class="title">Connection Restaured</span>
+                                               <span class="message">10/10/2014</span>
+                                           </a>
+                                       </li>
+                                   </ul>
+                                   <hr />
+                                   <div class="text-right">
+                                       <a href="#" class="view-more">View All</a>
+                                   </div>
+                               </div>
+                           </div>
+                       </li>
+                   </ul>
+                   <span class="separator"></span>
+               </div>
+               <!-- end: search & user box -->
+           </header>
+           <!-- end: header -->
+           <div class="inner-wrapper">
+           <!-- start: sidebar -->
+           <aside id="sidebar-left" class="sidebar-left">
+               <div class="sidebar-header">
+                   <div class="sidebar-title">
+                       Control Panel
+                   </div>
+                   <div class="sidebar-toggle hidden-xs" data-toggle-class="sidebar-left-collapsed" data-target="html" data-fire-event="sidebar-left-toggle">
+                       <i class="fa fa-bars" aria-label="Toggle sidebar"></i>
+                   </div>
+               </div>
+               <div class="nano">
+                   <div class="nano-content">
+                       <nav id="menu" class="nav-main" role="navigation">
+                           <ul class="nav nav-main">
+                               <li>
+                                   <a href="#">
+                                   <i class="fas fa-chart-area" aria-hidden="true"></i>
+                                   <span>Live Stats</span>
+                                   </a>
+                               </li>
+                               <li>
+                                   <a href="#">
+                                   <i class="fas fa-bell" aria-hidden="true"></i>
+                                   <span>Notifications</span>
+                                   </a>
+                               </li>
+                               <li>
+                                   <a href="#">
+                                   <i class="fas fa-user" aria-hidden="true"></i>
+                                   <span>Admin Login</span>
+                                   </a>
+                               </li>
+                           </ul>
+                       </nav>
+                   </div>
+               </div>
+           </aside>
+           <!-- end: sidebar -->
+           <section role="main" class="content-body">
+               <header class="page-header">
+                   <h2>
+                   {% block maintitle %}
+                   {% endblock %}
+                   </h2>
+               </header>
+               {% block maincontent %}
+               {% endblock %}
+           </section>
+        </section>
         <!--footer-->
     </body>
 </html>
