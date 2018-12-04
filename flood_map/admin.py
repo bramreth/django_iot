@@ -1,3 +1,4 @@
 from django.contrib import admin
+from flood_map.models import environmental_agency_flood_data
 
-# Register your models here.
+admin.site.register(environmental_agency_flood_data)
