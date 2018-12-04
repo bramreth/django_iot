@@ -12,7 +12,7 @@ class environmental_agency_flood_data(models.Model):
     time = models.DateTimeField(auto_now=False, auto_now_add=False)
 
     def get_newest(self):
-        newest = environmental_agency_flood_data.objects.order_by('-id')[:1]
+        newest = environmental_agency_flood_data.objects.order_by('-time')[:1]
 
         if datetime.now() > newest[0].time + datetime.timedelta(minutes=15):
             pass
