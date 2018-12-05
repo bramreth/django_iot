@@ -13,17 +13,29 @@ class FloodMonitoringSystemConfig(AppConfig):
         address = "eu.thethings.network"
 
         def uplink_callback(msg, client):
+            # this likely isnt the best method of passing data to the database, the issue is the whole app isn't
+            # ready at the start of this file so we cant import the models until this ready function is called
+            # feel free to tell me why im an idiot later.
+            from flood_monitoring_system.models import MqttWaterLevelData
             print("Received uplink from ", msg.dev_id)
             print("--------------")
             print(msg.hardware_serial)
             print(msg.metadata.time)
             print(msg.payload_raw)
-            tst = int(base64.b64decode(msg.payload_raw).encode('hex'), 16) # in millimeters
-            print(str(tst))
+            # tst = int(base64.b64decode(msg.payload_raw).encode('hex'), 16) # in millimeters
+            # print(str(tst))
             print(msg.metadata.altitude)
             print(msg.metadata.longitude)
             print(msg.metadata.latitude)
-            print("--------------")
+            tmp = MqttWaterLevelData()
+            tmp.time = msg.metadata.time
+            tmp.hardware_serial = msg.hardware_serial
+            tmp.longitude = msg.metadata.longitude
+            tmp.latitude = msg.metadata.latitude
+            tmp.altitude = msg.metadata.altitude
+            tmp.river_height_mm = msg.payload_raw  # int(base64.b64decode(msg.payload_raw).encode('hex'), 16)
+            tmp.save()
+            print("!-------------")
 
         print("start mqtt detection")
 
