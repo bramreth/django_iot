@@ -17,7 +17,7 @@
                 accessToken: 'your.mapbox.access.token'
             }).addTo(mymap);
 
-            {% for pin in object_list.api_data %}
+            {% for pin in object_list.api_data.pin_data %}
                 var marker = L.marker([{{ pin.lat }}, {{ pin.long }}]).addTo(mymap).bindPopup("<b>{{ pin.town }}: {{ pin.label }}</b><br/>{{ pin.river }}<br/>Reading: {{ pin.reading }} at <br/>{{ pin.time }}");
             {% endfor %}
         </script>
