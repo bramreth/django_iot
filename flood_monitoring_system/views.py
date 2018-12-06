@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from flood_monitoring_system.models import environmental_agency_flood_data, Sam_Mqtt
+from flood_monitoring_system.models import environmental_agency_flood_data, MqttWaterLevelData
 import base64
 # Create your views here.
 def index(request):
@@ -7,7 +7,7 @@ def index(request):
 
     query = {}
     query['api_data'] = environmental_agency_flood_data.get_newest("")
-    query['sensor_one'] = Sam_Mqtt.objects.filter(hardware_serial="C0EE400001012345").values()
-    query['sensor_two'] = Sam_Mqtt.objects.filter(hardware_serial="C0EE4000010109F3").values()
+    query['sensor_one'] = MqttWaterLevelData.objects.filter(hardware_serial="C0EE400001012345").values()
+    query['sensor_two'] = MqttWaterLevelData.objects.filter(hardware_serial="C0EE4000010109F3").values()
 
     return render(request, 'flood_monitoring_system/index.html', {"object_list":query})
