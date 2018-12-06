@@ -2,7 +2,7 @@ from django.db import models
 from datetime import datetime, timedelta
 
 class environmental_agency_flood_data(models.Model):
-    sensor_id = label = models.CharField(max_length = 80)
+    sensor_id = models.CharField(max_length = 80)
     label = models.CharField(max_length = 40)
     town = models.CharField(max_length=40)
     river = models.CharField(max_length=40)
@@ -13,10 +13,6 @@ class environmental_agency_flood_data(models.Model):
 
     def get_newest(self):
         newest = environmental_agency_flood_data.objects.order_by('-time')[:1]
-
-        if datetime.now() > newest[0].time + datetime.timedelta(minutes=15):
-            pass
-
 
         viewdata = {
             "pin_data": [
@@ -33,3 +29,6 @@ class environmental_agency_flood_data(models.Model):
             ]
         }
         return viewdata
+
+    def add_data(self):
+        pass
