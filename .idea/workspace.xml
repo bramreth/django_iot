@@ -4,13 +4,8 @@
     <list default="true" id="05f4a094-77ca-42f0-94f1-a02ff343b871" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flood_monitoring_system/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/flood_monitoring_system/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flood_monitoring_system/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/flood_monitoring_system/apps.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flood_monitoring_system/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/flood_monitoring_system/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flood_monitoring_system/static/lib/fontawesome-free-5.5.0-web.zip" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/flood_monitoring_system/templates/flood_monitoring_system/includes/map_view.html" beforeDir="false" afterPath="$PROJECT_DIR$/flood_monitoring_system/templates/flood_monitoring_system/includes/map_view.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/flood_monitoring_system/templates/flood_monitoring_system/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/flood_monitoring_system/templates/flood_monitoring_system/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flood_monitoring_system/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/flood_monitoring_system/views.py" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/venv/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -69,7 +64,7 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="css" value="29" />
-          <entry key="html" value="645" />
+          <entry key="html" value="682" />
           <entry key="py" value="465" />
           <entry key="py@django_iot" value="19" />
         </counts>
@@ -78,7 +73,7 @@
         <counts>
           <entry key="CSS" value="29" />
           <entry key="CommandLine" value="19" />
-          <entry key="HTML" value="645" />
+          <entry key="HTML" value="682" />
           <entry key="Python" value="465" />
         </counts>
       </usages-collector>
@@ -130,23 +125,31 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/flood_monitoring_system/templates/flood_monitoring_system/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="675">
-              <caret line="27" column="74" selection-start-line="27" selection-start-column="74" selection-end-line="27" selection-end-column="74" />
+            <state relative-caret-position="1100">
+              <caret line="65" column="5" selection-start-line="54" selection-start-column="4" selection-end-line="65" selection-end-column="5" />
               <folding>
                 <element signature="n#style#0;n#div#0;n#div#0;n#section#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#div#0;n#section#0;n#div#1;n#div#0;n#!!top" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/flood_monitoring_system/templates/flood_monitoring_system/includes/map_view.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="400">
-              <caret line="19" column="49" selection-start-line="19" selection-start-column="49" selection-end-line="19" selection-end-column="49" />
+            <state relative-caret-position="200">
+              <caret line="8" column="38" selection-start-line="8" selection-start-column="38" selection-end-line="8" selection-end-column="38" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/flood_monitoring_system/apps.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="188">
+              <caret line="44" column="101" selection-start-line="44" selection-start-column="39" selection-end-line="44" selection-end-column="101" />
               <folding>
-                <element signature="e#547#609#0#HTML" expanded="true" />
+                <element signature="e#0#33#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -169,8 +172,8 @@
         <option value="$PROJECT_DIR$/flood_monitoring_system/views.py" />
         <option value="$PROJECT_DIR$/flood_monitoring_system/models.py" />
         <option value="$PROJECT_DIR$/flood_monitoring_system/apps.py" />
-        <option value="$PROJECT_DIR$/flood_monitoring_system/templates/flood_monitoring_system/index.html" />
         <option value="$PROJECT_DIR$/flood_monitoring_system/templates/flood_monitoring_system/includes/map_view.html" />
+        <option value="$PROJECT_DIR$/flood_monitoring_system/templates/flood_monitoring_system/index.html" />
       </list>
     </option>
   </component>
@@ -361,7 +364,7 @@
       <window_info anchor="bottom" id="Version Control" order="8" weight="0.329718" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="11" visible="true" weight="0.30477223" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="11" visible="true" weight="0.17462039" />
       <window_info anchor="bottom" id="Python Console" order="12" />
       <window_info anchor="bottom" id="manage.py@django_iot" order="13" weight="0.0" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -520,16 +523,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/flood_monitoring_system/apps.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="375">
-          <caret line="48" column="120" selection-start-line="48" selection-start-column="120" selection-end-line="48" selection-end-column="120" />
-          <folding>
-            <element signature="e#0#33#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/flood_monitoring_system/templates/flood_monitoring_system/header.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="254">
@@ -548,21 +541,27 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/flood_monitoring_system/templates/flood_monitoring_system/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="675">
-          <caret line="27" column="74" selection-start-line="27" selection-start-column="74" selection-end-line="27" selection-end-column="74" />
+        <state relative-caret-position="1100">
+          <caret line="65" column="5" selection-start-line="54" selection-start-column="4" selection-end-line="65" selection-end-column="5" />
           <folding>
             <element signature="n#style#0;n#div#0;n#div#0;n#section#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#div#0;n#section#0;n#div#1;n#div#0;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/flood_monitoring_system/templates/flood_monitoring_system/includes/map_view.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="400">
-          <caret line="19" column="49" selection-start-line="19" selection-start-column="49" selection-end-line="19" selection-end-column="49" />
+        <state relative-caret-position="200">
+          <caret line="8" column="38" selection-start-line="8" selection-start-column="38" selection-end-line="8" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/flood_monitoring_system/apps.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="188">
+          <caret line="44" column="101" selection-start-line="44" selection-start-column="39" selection-end-line="44" selection-end-column="101" />
           <folding>
-            <element signature="e#547#609#0#HTML" expanded="true" />
+            <element signature="e#0#33#0" expanded="true" />
           </folding>
         </state>
       </provider>

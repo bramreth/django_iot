@@ -4,60 +4,79 @@
 {% block header %}
 <script src="{% static 'lib/canvasjs-2.2/canvasjs.min.js' %}"></script>
 <script>
-    window.onload = function () {
-        var chart = new CanvasJS.Chart("chartSensorOne", {
-            animationEnabled: true,
-            title: {
-                text: ""
-            },
-            axisX: {
-                title: "Time"
-            },
-            axisY: {
-                title: "Water Level",
-                suffix: "mm"
-            },
-            data: [{
-                type: "line",
-                name: "CPU Utilization",
-                connectNullData: true,
-                xValueType: "dateTime",
-                xValueFormatString: "DD MMM hh:mm TT",
-                dataPoints: [
-                    {% for data in object_list.sensor_one %}
-                        {   x:{{data.time}}, y:{{data.river_height_mm}} },
-                    {% endfor %}
-                ]
-            }]
-        });
-        chart.render();
-        var chartTwo = new CanvasJS.Chart("chartSensorTwo", {
-            animationEnabled: true,
-            title: {
-                text: ""
-            },
-            axisX: {
-                title: "Time"
-            },
-            axisY: {
-                title: "Water Level",
-                suffix: "mm"
-            },
-            data: [{
-                type: "line",
-                name: "CPU Utilization",
-                connectNullData: true,
-                xValueType: "dateTime",
-                xValueFormatString: "DD MMM hh:mm TT",
-                dataPoints: [
-                   {% for data in object_list.sensor_two %}
-                        {   x:{{data.time}}, y:{{data.river_height_mm}} },
-                    {% endfor %}
-                ]
-            }]
-        });
-        chartTwo.render();
-    }
+
+window.onload = function () {
+
+var chart = new CanvasJS.Chart("chartSensor", {
+	animationEnabled: true,
+	theme: "light2",
+	title:{
+		text: "Site Traffic"
+	},
+	axisX:{
+		valueFormatString: "DD MMM",
+		crosshair: {
+			enabled: true,
+			snapToDataPoint: true
+		}
+	},
+	axisY: {
+		title: "Number of Visits",
+        title: "Water Level",
+        suffix: "mm",
+		crosshair: {
+			enabled: true
+		}
+	},
+	toolTip:{
+		shared:true
+	},
+	legend:{
+		cursor:"pointer",
+		verticalAlign: "bottom",
+		horizontalAlign: "left",
+		dockInsidePlotArea: true,
+		itemclick: toogleDataSeries
+	},
+	data: [{
+		type: "line",
+		showInLegend: true,
+		name: "{{ object_list.sensor_one.0.hardware_serial }}",
+		markerType: "square",
+        xValueType: "dateTime",
+        xValueFormatString: "DD MMM hh:mm TT",
+		color: "#F08080",
+		dataPoints: [
+			{% for data in object_list.sensor_one %}
+                {   x:{{data.time}}, y:{{data.river_height_mm}} },
+            {% endfor %}
+		]
+	},
+	{
+		type: "line",
+		showInLegend: true,
+		name: "{{ object_list.sensor_two.0.hardware_serial }}",
+        xValueType: "dateTime",
+        xValueFormatString: "DD MMM hh:mm TT",
+		dataPoints: [
+			{% for data in object_list.sensor_two %}
+                {   x:{{data.time}}, y:{{data.river_height_mm}} },
+            {% endfor %}
+		]
+	}]
+});
+chart.render();
+
+function toogleDataSeries(e){
+	if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+		e.dataSeries.visible = false;
+	} else{
+		e.dataSeries.visible = true;
+	}
+	chart.render();
+}
+
+}
 </script>
 {% endblock %}
 
@@ -73,24 +92,10 @@
                    <a href="#" class="fa fa-caret-down"></a>
                    <a href="#" class="fa fa-times"></a>
                </div>
-               <h2 class="panel-title">Water Levels - Sensor {{ object_list.sensor_one.0.hardware_serial }}</h2>
+               <h2 class="panel-title">Water Levels</h2>
            </header>
            <div class="panel-body">
-                <div id="chartSensorOne" style="height: 370px; width: 100%;"></div>
-           </div>
-       </section>
-   </div>
-    <div class="col-md-12">
-       <section class="panel">
-           <header class="panel-heading">
-               <div class="panel-actions">
-                   <a href="#" class="fa fa-caret-down"></a>
-                   <a href="#" class="fa fa-times"></a>
-               </div>
-               <h2 class="panel-title">Water Levels - Sensor {{ object_list.sensor_two.0.hardware_serial }}</h2>
-           </header>
-           <div class="panel-body">
-                <div id="chartSensorTwo" style="height: 370px; width: 100%;"></div>
+                <div id="chartSensor" style="height: 400px; width: 100%;"></div>
            </div>
        </section>
    </div>
