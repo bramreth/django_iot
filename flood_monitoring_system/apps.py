@@ -51,7 +51,7 @@ class FloodMonitoringSystemConfig(AppConfig):
                 print(_thread.get_ident())
                 time.sleep(2)
         try:
-            print(threading.active_count())
+            print(threading.current_thread())
             _thread.start_new_thread(query_environment_api, ("https://environment.data.gov.uk/flood-monitoring/id/stations?RLOIid=1143", 900))
         except:
             print("Error starting thread")
