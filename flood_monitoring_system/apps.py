@@ -42,6 +42,4 @@ class FloodMonitoringSystemConfig(AppConfig):
 
         mqtt_client = ttn.MQTTClient(app_id, access_key, mqtt_address=address)
         mqtt_client.set_uplink_callback(uplink_callback)
-
-        mqtt_client.set_uplink_callback(uplink_callback)
         mqtt_client.connect()
