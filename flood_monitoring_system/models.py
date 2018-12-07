@@ -32,16 +32,22 @@ class MqttWaterLevelData(models.Model):
         print(viewdata)
         return viewdata
 
-"""
-class Sam_Mqtt(models.Model):
-    id = models.CharField(max_length=50, primary_key=True)
-    hardware_serial = models.CharField(max_length=20)
-    longitude = models.DecimalField(max_digits=10, decimal_places=7)
-    latitude = models.DecimalField(max_digits=9, decimal_places=7)
-    altitude = models.IntegerField()
-    river_height_mm = models.CharField(max_length=6)
-    time = models.CharField(max_length=20)
-"""
+    def get_all(self):
+        #results = MqttWaterLevelData.objects.
+        viewdata = {
+            "results": []
+        }
+        for name in MqttWaterLevelData.objects.values("hardware_serial").distinct():
+            newest = MqttWaterLevelData.objects.filter(hardware_serial=name["hardware_serial"]).order_by('-time')
+            heights_and_times = []
+            for item in newest:
+                heights_and_times.append((item.time, item.river_height_mm))
+            viewdata["results"].append({
+                "id": name,
+                "time_reading": heights_and_times
+            })
+        print(viewdata)
+        return viewdata
 
 class environmental_agency_flood_data(models.Model):
     sensor_id = models.CharField(max_length = 80)

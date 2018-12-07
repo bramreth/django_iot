@@ -9,5 +9,6 @@ def index(request):
     query['api_data'] = environmental_agency_flood_data.get_newest("")
     print(query['api_data'])
     query['sensors'] = MqttWaterLevelData.get_newest("")
+    query['sensors_all'] = MqttWaterLevelData.get_all("")
 
     return render(request, 'flood_monitoring_system/index.html', {"object_list":query})

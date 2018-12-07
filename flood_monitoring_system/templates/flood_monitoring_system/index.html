@@ -6,7 +6,15 @@
 <script>
 
 window.onload = function () {
+CanvasJS.addColorSet("greenShades",
+                [//colorSet Array
 
+                "#2F4F4F",
+                "#008080",
+                "#2E8B57",
+                "#3CB371",
+                "#90EE90"
+                ]);
 var chart = new CanvasJS.Chart("chartSensor", {
 	animationEnabled: true,
 	theme: "light2",
@@ -38,7 +46,26 @@ var chart = new CanvasJS.Chart("chartSensor", {
 		dockInsidePlotArea: true,
 		itemclick: toogleDataSeries
 	},
-	data: [{
+    data: [
+        {% for pin in object_list.sensors_all.results %}
+            {
+                type: "line",
+                showInLegend: true,
+                name: "{{ pin.id.hardware_serial }}",
+                markerType: "square",
+                xValueType: "dateTime",
+                xValueFormatString: "DD MMM hh:mm TT",
+                //color: "#F08080",
+                dataPoints: [
+                    {% for data in pin.time_reading %}
+                        {   x:{{data.0}}, y:{{ data.1 }}   },
+                    {% endfor %}
+                ]
+            },
+        {% endfor %}
+    ]
+});
+	/*data: [{
 		type: "line",
 		showInLegend: true,
 		name: "{{ object_list.sensor_one.0.hardware_serial }}",
@@ -63,8 +90,8 @@ var chart = new CanvasJS.Chart("chartSensor", {
                 {   x:{{data.time}}, y:{{data.river_height_mm}} },
             {% endfor %}
 		]
-	}]
-});
+	}]*/
+
 chart.render();
 
 function toogleDataSeries(e){
