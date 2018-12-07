@@ -1,0 +1,96 @@
+{% extends "flood_monitoring_system/header.html" %}
+{% load staticfiles%}
+
+{% block header %}
+<script src="{% static 'lib/jquery-ui/jquery-ui.min.js' %}"></script>
+<script src="{% static 'lib/jquery-ui/jquery-ui-time.js' %}"></script>
+<script src="{% static 'js/test.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/test.css' %}" />
+<link rel="stylesheet" href="{% static 'lib/jquery-ui/jquery-ui.min.css' %}" />
+<link rel="stylesheet" href="{% static 'lib/jquery-ui/jquery-ui-time.css' %}" />
+
+
+{% endblock %}
+
+{% block maintitle %}Test Mode{% endblock %}
+
+{% block maincontent %}
+<h2>Data from Sensors</h2>
+<table id="table" class="table">
+  <thead>
+    <tr>
+      <th scope="col">Device</th>
+      <th scope="col">River height (mm)</th>
+      <th scope="col">Time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+          <select name="device" class="custom-select" id="device-1" style="width:100%;">
+             <option selected disabled>--Select Device--</option>
+             <option >{{ object_list.sensor_one.0.hardware_serial }}</option>
+             <option >{{ object_list.sensor_two.0.hardware_serial }}</option>
+          </select>
+      </td>
+      <td>
+          <input name="water" type="number" id="waterlevel-1" class="form-control" placeholder="1000">
+      </td>
+      <td>
+          <input name="date" type="text" id="date-1" class="form-control"  placeholder="DD/MM/YYY hh:mm">
+      </td>
+      <td>
+         <div class="form-group">
+           <p class="del-btn"><i class="fas fa-times"></i></p>
+         </div>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+      <tr>
+         <td>
+            <p class="btn btn-secondary add-btn"><i class="fas fa-plus"></i> Add</p>
+         </td>
+      </tr>
+  </tfoot>
+</table>
+
+<p class="btn btn-primary btn-lg" id="gen">Generate Statistics</p>
+
+<div id="stats">
+<div class="row">
+    <div class="col-md-12">
+       <section class="panel">
+           <header class="panel-heading">
+               <div class="panel-actions">
+                   <a href="#" class="fa fa-caret-down"></a>
+                   <a href="#" class="fa fa-times"></a>
+               </div>
+               <h2 class="panel-title">Water Levels</h2>
+           </header>
+           <div class="panel-body">
+                <div id="chartSensor" style="height: 400px; width: 100%;"></div>
+           </div>
+       </section>
+   </div>
+    <div class="col-md-6">
+        <section class="panel">
+           <header class="panel-heading">
+               <div class="panel-actions">
+                   <a href="#" class="fa fa-caret-down"></a>
+                   <a href="#" class="fa fa-times"></a>
+               </div>
+               <h2 class="panel-title">Live Map</h2>
+               <p class="panel-subtitle">Water level data from all over Canterbury. Updates regularly.</p>
+           </header>
+           <div class="panel-body">
+
+           </div>
+       </section>
+    </div>
+</div>
+
+</div>
+{% endblock %}
+
+

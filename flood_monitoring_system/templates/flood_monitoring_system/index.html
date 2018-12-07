@@ -10,11 +10,8 @@ window.onload = function () {
 var chart = new CanvasJS.Chart("chartSensor", {
 	animationEnabled: true,
 	theme: "light2",
-	title:{
-		text: "Site Traffic"
-	},
 	axisX:{
-		valueFormatString: "DD MMM",
+		valueFormatString: "DD MMM hh:mm TT",
 		crosshair: {
 			enabled: true,
 			snapToDataPoint: true
