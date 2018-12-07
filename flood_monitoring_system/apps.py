@@ -1,6 +1,7 @@
 from django.apps import AppConfig
 import ttn
 import base64, time, datetime
+import _thread, threading
 
 class FloodMonitoringSystemConfig(AppConfig):
     name = 'flood_monitoring_system'
@@ -43,3 +44,14 @@ class FloodMonitoringSystemConfig(AppConfig):
         mqtt_client = ttn.MQTTClient(app_id, access_key, mqtt_address=address)
         mqtt_client.set_uplink_callback(uplink_callback)
         mqtt_client.connect()
+
+        def query_environment_api(url, delay):
+            from flood_monitoring_system.models import environmental_agency_flood_data
+            while(1):
+                print(_thread.get_ident())
+                time.sleep(2)
+        try:
+            print(threading.current_thread())
+            _thread.start_new_thread(query_environment_api, ("https://environment.data.gov.uk/flood-monitoring/id/stations?RLOIid=1143", 900))
+        except:
+            print("Error starting thread")

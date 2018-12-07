@@ -18,6 +18,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path(r'', include('flood_monitoring_system.urls')),
-    path(r'flood_map', include('flood_map.urls')),
     path('admin/', admin.site.urls)
 ]
