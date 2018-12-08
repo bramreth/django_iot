@@ -3,7 +3,7 @@ from flood_monitoring_system.models import environmental_agency_flood_data, Mqtt
 # Create your views here.
 query = {}
 query['api_data'] = environmental_agency_flood_data.get_newest("")
-print(query['api_data'])
+#print(query['api_data'])
 query['sensors'] = MqttWaterLevelData.get_newest("")
 query['sensors_all'] = MqttWaterLevelData.get_all("")
 

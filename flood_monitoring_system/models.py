@@ -29,7 +29,7 @@ class MqttWaterLevelData(models.Model):
                     "reading": newest[0].river_height_mm,
                     "time": newest[0].time
                 })
-        print(viewdata)
+        #print(viewdata)
         return viewdata
 
     def get_all(self):
@@ -46,7 +46,7 @@ class MqttWaterLevelData(models.Model):
                 "id": name,
                 "time_reading": heights_and_times
             })
-        print(viewdata)
+        #print(viewdata)
         return viewdata
 
 class environmental_agency_flood_data(models.Model):
@@ -57,7 +57,7 @@ class environmental_agency_flood_data(models.Model):
     lat = models.DecimalField(max_digits=9, decimal_places=7)
     long = models.DecimalField(max_digits=10, decimal_places=7)
     reading = models.FloatField()
-    time = models.DateTimeField(auto_now=False, auto_now_add=False)
+    time = models.CharField(max_length = 20)
 
     def get_newest(self):
         newest = environmental_agency_flood_data.objects.order_by('-time')[:1]
@@ -78,7 +78,16 @@ class environmental_agency_flood_data(models.Model):
         }
         return viewdata
 
-
+class Notifications(models.Model):
+    NOTIFICATION_TYPE = (
+        ("MQTT", "MQTT service down"),
+        ("REST", "Environment Agency Real Time flood-monitoring API down"),
+        ("FLOOD", "Flood warning")
+    )
+    type = models.CharField(max_length=5, choices=NOTIFICATION_TYPE)
+    message = models.CharField(max_length=1000)
+    severity_rating = models.IntegerField()
+    severity_message = models.CharField(max_length=40)
 
 class test_environmental_agency_flood_data(models.Model):
     sensor_id = models.CharField(max_length = 80)
