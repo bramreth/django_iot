@@ -6,15 +6,7 @@
 <script>
 
 window.onload = function () {
-CanvasJS.addColorSet("greenShades",
-                [//colorSet Array
 
-                "#2F4F4F",
-                "#008080",
-                "#2E8B57",
-                "#3CB371",
-                "#90EE90"
-                ]);
 var chart = new CanvasJS.Chart("chartSensor", {
 	animationEnabled: true,
 	theme: "light2",
@@ -44,17 +36,16 @@ var chart = new CanvasJS.Chart("chartSensor", {
 		itemclick: toogleDataSeries
 	},
     data: [
-        {% for pin in object_list.sensors_all.results %}
+        {% for device in object_list.sensors_all.results %}
             {
                 type: "line",
                 showInLegend: true,
-                name: "{{ pin.id.hardware_serial }}",
+                name: "{{ device.id.hardware_serial }}",
                 markerType: "square",
                 xValueType: "dateTime",
                 xValueFormatString: "DD MMM hh:mm TT",
-                //color: "#F08080",
                 dataPoints: [
-                    {% for data in pin.time_reading %}
+                    {% for data in device.time_reading %}
                         {   x:{{data.0}}, y:{{ data.1 }}   },
                     {% endfor %}
                 ]
@@ -62,33 +53,6 @@ var chart = new CanvasJS.Chart("chartSensor", {
         {% endfor %}
     ]
 });
-	/*data: [{
-		type: "line",
-		showInLegend: true,
-		name: "{{ object_list.sensor_one.0.hardware_serial }}",
-		markerType: "square",
-        xValueType: "dateTime",
-        xValueFormatString: "DD MMM hh:mm TT",
-		color: "#F08080",
-		dataPoints: [
-			{% for data in object_list.sensor_one %}
-                {   x:{{data.time}}, y:{{data.river_height_mm}} },
-            {% endfor %}
-		]
-	},
-	{
-		type: "line",
-		showInLegend: true,
-		name: "{{ object_list.sensor_two.0.hardware_serial }}",
-        xValueType: "dateTime",
-        xValueFormatString: "DD MMM hh:mm TT",
-		dataPoints: [
-			{% for data in object_list.sensor_two %}
-                {   x:{{data.time}}, y:{{data.river_height_mm}} },
-            {% endfor %}
-		]
-	}]*/
-
 chart.render();
 
 function toogleDataSeries(e){
@@ -104,7 +68,6 @@ function toogleDataSeries(e){
 </script>
 {% endblock %}
 
-{#html body#}
 {% block maintitle %}Live Stats{% endblock %}
 
 {% block maincontent %}
@@ -119,7 +82,12 @@ function toogleDataSeries(e){
                <h2 class="panel-title">Water Levels</h2>
            </header>
            <div class="panel-body">
+               <div class="col-md-9">
                 <div id="chartSensor" style="height: 400px; width: 100%;"></div>
+               </div>
+               <div class="col-md-3">
+                   
+               </div>
            </div>
        </section>
    </div>
@@ -135,6 +103,33 @@ function toogleDataSeries(e){
            </header>
            <div class="panel-body">
                {% include 'flood_monitoring_system/includes/map_view.html' %}
+           </div>
+       </section>
+    </div>
+    <div class="col-md-6">
+        <section class="panel">
+           <header class="panel-heading">
+               <div class="panel-actions">
+                   <a href="#" class="fa fa-caret-down"></a>
+                   <a href="#" class="fa fa-times"></a>
+               </div>
+               <h2 class="panel-title">Statistics</h2>
+               <p class="panel-subtitle">Here's some interesting insights.</p>
+           </header>
+           <div class="panel-body">
+               <div class="col-md-6">
+
+               </div>
+               <div class="col-md-6">
+               </div>
+               <div class="col-md-6">
+               </div>
+               <div class="col-md-6">
+               </div>
+               <div class="col-md-6">
+               </div>
+               <div class="col-md-6">
+               </div>
            </div>
        </section>
     </div>

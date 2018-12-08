@@ -10,7 +10,6 @@ query['sensors_all'] = MqttWaterLevelData.get_all("")
 def index(request):
     return render(request, 'flood_monitoring_system/index.html', {"object_list":query})
 
-    
 def notifications(request):
     return render(request, 'flood_monitoring_system/notifications.html')
 

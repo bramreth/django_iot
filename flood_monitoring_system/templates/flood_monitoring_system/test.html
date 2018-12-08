@@ -29,8 +29,9 @@
       <td>
           <select name="device" class="custom-select" id="device-1" style="width:100%;">
              <option selected disabled>--Select Device--</option>
-             <option >{{ object_list.sensor_one.0.hardware_serial }}</option>
-             <option >{{ object_list.sensor_two.0.hardware_serial }}</option>
+              {% for device in object_list.sensors_all.results %}
+                   <option >{{ device.id.hardware_serial  }}</option>
+              {% endfor %}
           </select>
       </td>
       <td>
