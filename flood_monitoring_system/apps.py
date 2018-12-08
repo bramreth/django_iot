@@ -2,6 +2,8 @@ from django.apps import AppConfig
 import ttn
 import base64, time, datetime
 import _thread, threading
+import urllib.request, json
+
 
 class FloodMonitoringSystemConfig(AppConfig):
     name = 'flood_monitoring_system'
@@ -48,10 +50,47 @@ class FloodMonitoringSystemConfig(AppConfig):
         def query_environment_api(url, delay):
             from flood_monitoring_system.models import environmental_agency_flood_data
             while(1):
-                print(_thread.get_ident())
-                time.sleep(2)
+                with urllib.request.urlopen(url) as json_url:
+                    data = json.loads(json_url.read().decode())
+                with urllib.request.urlopen(data["items"][0]["measures"][0]['@id']) as json_url_2:
+                    waterdata = json.loads(json_url_2.read().decode())
+
+                print("Queried Environment Agency Real Time flood-monitoring API")
+                print("-------------")
+                print(data["items"][0]["@id"])
+                print(data["items"][0]["label"])
+                print(data["items"][0]["lat"])
+                print(data["items"][0]["long"])
+                print(data["items"][0]["riverName"])
+                print(data["items"][0]["town"])
+                print(waterdata["items"]["latestReading"]["value"])
+                print(waterdata["items"]["latestReading"]["dateTime"])
+                print("-------------")
+                EnvironmentAgencyData = environmental_agency_flood_data()
+                EnvironmentAgencyData.sensor_id = data["items"][0]["@id"]
+                EnvironmentAgencyData.label = data["items"][0]["label"]
+                EnvironmentAgencyData.town = data["items"][0]["town"]
+                EnvironmentAgencyData.river = data["items"][0]["riverName"]
+                EnvironmentAgencyData.lat = data["items"][0]["lat"]
+                EnvironmentAgencyData.long = data["items"][0]["long"]
+                EnvironmentAgencyData.reading = waterdata["items"]["latestReading"]["value"]
+
+                dt = "" + waterdata["items"]["latestReading"]["dateTime"] + ""  # daytime
+                d = dt.split("T")[0]  # day
+                t = dt.split("Z")[0].split("T")[1]  # time
+
+                EnvironmentAgencyData.time = int(time.mktime(time.strptime(d + " " + t, '%Y-%m-%d %H:%M:%S'))) * 1000
+
+                if (int(environmental_agency_flood_data.get_newest("")["pin_data"][0]["time"]) < EnvironmentAgencyData.time):
+                    EnvironmentAgencyData.save()
+                    print("Environment Agency Real Time flood-monitoring API data saved")
+                else:
+                    print("Environment Agency Real Time flood-monitoring API data not saved")
+
+
+                print("-------------")
+                time.sleep(delay)
         try:
-            print(threading.current_thread())
             _thread.start_new_thread(query_environment_api, ("https://environment.data.gov.uk/flood-monitoring/id/stations?RLOIid=1143", 900))
         except:
             print("Error starting thread")
