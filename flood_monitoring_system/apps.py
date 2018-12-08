@@ -81,7 +81,6 @@ class FloodMonitoringSystemConfig(AppConfig):
                 print("Historic data saved")
 
             while(1):
-
                 with urllib.request.urlopen(data["items"][0]["measures"][0]['@id']) as json_url_2:
                     waterdata = json.loads(json_url_2.read().decode())
 
