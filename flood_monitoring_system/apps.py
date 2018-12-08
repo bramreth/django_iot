@@ -49,9 +49,39 @@ class FloodMonitoringSystemConfig(AppConfig):
 
         def query_environment_api(url, delay):
             from flood_monitoring_system.models import environmental_agency_flood_data
+
+            with urllib.request.urlopen(url) as json_url:
+                data = json.loads(json_url.read().decode())
+
+            if not environmental_agency_flood_data.objects.exists():
+                print("Environment Agency Real Time flood-monitoring API data found")
+                print("Gathering historic data")
+                with urllib.request.urlopen("https://environment.data.gov.uk/flood-monitoring/id/stations/E3966/readings?_sorted") as historic_json_url:
+                    historicdata = json.loads(historic_json_url.read().decode())
+
+                print("Saving historic data")
+                for reading in historicdata["items"]:
+                    print(reading["value"])
+                    EnvironmentAgencyData = environmental_agency_flood_data()
+                    EnvironmentAgencyData.sensor_id = data["items"][0]["@id"]
+                    EnvironmentAgencyData.label = data["items"][0]["label"]
+                    EnvironmentAgencyData.town = data["items"][0]["town"]
+                    EnvironmentAgencyData.river = data["items"][0]["riverName"]
+                    EnvironmentAgencyData.lat = data["items"][0]["lat"]
+                    EnvironmentAgencyData.long = data["items"][0]["long"]
+                    EnvironmentAgencyData.reading = reading["value"]
+
+                    dt = "" + reading["dateTime"] + ""  # daytime
+                    d = dt.split("T")[0]  # day
+                    t = dt.split("Z")[0].split("T")[1]  # time
+
+                    EnvironmentAgencyData.time = int(
+                        time.mktime(time.strptime(d + " " + t, '%Y-%m-%d %H:%M:%S'))) * 1000
+                    EnvironmentAgencyData.save()
+                print("Historic data saved")
+
             while(1):
-                with urllib.request.urlopen(url) as json_url:
-                    data = json.loads(json_url.read().decode())
+
                 with urllib.request.urlopen(data["items"][0]["measures"][0]['@id']) as json_url_2:
                     waterdata = json.loads(json_url_2.read().decode())
 
