@@ -48,6 +48,25 @@ class MqttWaterLevelData(models.Model):
             })
         #print(viewdata)
         return viewdata
+"""
+    def get_in_time(self, time_one, time_two):
+
+        viewdata = {
+            "results": []
+        }
+        for name in MqttWaterLevelData.objects.values("hardware_serial").distinct():
+            newest = MqttWaterLevelData.objects.filter(hardware_serial=name["hardware_serial"]).order_by('-time')
+            MqttWaterLevelData.objects.filter(time__regex=)
+            heights_and_times = []
+            for item in newest:
+                heights_and_times.append((item.time, item.river_height_mm))
+            viewdata["results"].append({
+                "id": name,
+                "time_reading": heights_and_times
+            })
+        print(viewdata)
+        return viewdata
+"""
 
 class environmental_agency_flood_data(models.Model):
     sensor_id = models.CharField(max_length = 80)
