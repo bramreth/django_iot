@@ -45,7 +45,7 @@ class FloodMonitoringSystemConfig(AppConfig):
 
         mqtt_client = ttn.MQTTClient(app_id, access_key, mqtt_address=address)
         mqtt_client.set_uplink_callback(uplink_callback)
-        mqtt_client.connect()
+        #mqtt_client.connect()
 
         def query_environment_api(url, delay):
             from flood_monitoring_system.models import environmental_agency_flood_data
@@ -64,6 +64,12 @@ class FloodMonitoringSystemConfig(AppConfig):
                 from flood_monitoring_system.models import Notifications
 
                 NoConnectionNotification = Notifications()
+                NoConnectionNotification.type = "REST"
+                NoConnectionNotification.message = "Lost connection to the Environment Agency Real Time flood-monitoring API."
+                NoConnectionNotification.severity_rating = 4
+                NoConnectionNotification.severity_message = "Lost connection"
+                NoConnectionNotification.time = datetime.datetime.now()
+                NoConnectionNotification.save()
 
             elif not environmental_agency_flood_data.objects.exists():
                 print("================================================================================================================")
@@ -173,19 +179,13 @@ class FloodMonitoringSystemConfig(AppConfig):
                     print("Found flood warnings:")
                     for warning in floodData['items']:
                         print(warning['description'])
-                        if warning['description'] == "The Great Stour at Canterbury":
+                        if warning['description'] == "Coast from Whitstable to Margate":
                             Warning = Notifications()
                             Warning.type = "FLOOD"
                             Warning.message = warning['message']
                             Warning.severity_rating = warning['severityLevel']
                             Warning.severity_message = warning['severity']
-
-                            dt = "" + warning['timeRaised'] + "Z"  # daytime
-                            d = dt.split("T")[0]  # day
-                            t = dt.split("Z")[0].split("T")[1]  # time
-
-                            Warning.time = int(time.mktime(
-                                time.strptime(d + " " + t, '%Y-%m-%d %H:%M:%S'))) * 1000  # timestamp milliseconds
+                            Warning.time = warning['timeRaised']
                             Warning.save()
                             print("Flood warning saved")
                 print("----------------------------------------------------------------------------------------------------------------")
