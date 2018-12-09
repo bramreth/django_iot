@@ -11,6 +11,7 @@ var chart = new CanvasJS.Chart("chartSensor", {
 	animationEnabled: true,
 	theme: "light2",
 	axisX:{
+	    title: "Date and Time",
 		valueFormatString: "DD MMM hh:mm TT",
 		crosshair: {
 			enabled: true,
@@ -18,7 +19,6 @@ var chart = new CanvasJS.Chart("chartSensor", {
 		}
 	},
 	axisY: {
-		title: "Number of Visits",
         title: "Water Level",
         suffix: "mm",
 		crosshair: {
@@ -40,7 +40,7 @@ var chart = new CanvasJS.Chart("chartSensor", {
             {
                 type: "line",
                 showInLegend: true,
-                name: "{{ device.id.hardware_serial }}",
+                name: "{{ device.location}}",
                 markerType: "square",
                 xValueType: "dateTime",
                 xValueFormatString: "DD MMM hh:mm TT",
@@ -79,11 +79,10 @@ function toogleDataSeries(e){
                    <a href="#" class="fa fa-caret-down"></a>
                    <a href="#" class="fa fa-times"></a>
                </div>
-               <h2 class="panel-title">Water Levels</h2>
+               <h2 class="panel-title">Water levels in the river Stour</h2>
            </header>
            <div class="panel-body">
                 <div id="chartSensor" style="height: 400px; width: 100%;"></div>
-
            </div>
        </section>
    </div>

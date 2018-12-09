@@ -44,7 +44,9 @@ class MqttWaterLevelData(models.Model):
                 heights_and_times.append((item.time, item.river_height_mm))
             viewdata["results"].append({
                 "id": name,
-                "time_reading": heights_and_times
+                "time_reading": heights_and_times,
+                "lat": newest[0].latitude,
+                "long": newest[0].longitude,
             })
         #print(viewdata)
         return viewdata

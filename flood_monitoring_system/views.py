@@ -1,13 +1,51 @@
+#IMPORTS==============================================================================================
 from django.shortcuts import render
+from _datetime import datetime
+from geopy.geocoders import Nominatim
 from flood_monitoring_system.models import environmental_agency_flood_data, MqttWaterLevelData, Notifications
-# Create your views here.
+#====================================================================================================
+
+#MISC FUNCTIONS======================================================================================
+#Made by sam
+def convert_from_timestamp(data):
+    for pin in data['pin_data']:
+        print(pin['time'])
+        pin['time'] = datetime.fromtimestamp(int(pin['time'][0:10])) #remove milliseconds
+    pass
+def generate_addresses(data):
+    print(data)
+    key = ""
+    if "pin_data" in data:
+        print("PIN DATA BOI")
+        key = "pin_data"
+    elif "results" in data:
+        print("RESULT DATA BOI")
+        key = "results"
+    print("key:" + key)
+    geolocator = Nominatim(user_agent="specify_your_app_name_here")
+    for d in data[key]:
+        location = geolocator.reverse(str(d['lat']) + "," + str(d['long']))
+        d['location'] = location.raw['address']['building'] + " " + location.raw['address']['road']
+    pass
+
+#made by Max
+def clean_flood_area():
+    for coord in flood_area_coordinates:
+        rev = [coord[1], coord[0]]
+        query['flood_area'].append(rev)
+#=====================================================================================================
+
+#GLOBAL DATA==========================================================================================
 query = {}
 query['api_data'] = environmental_agency_flood_data.get_newest("")
+convert_from_timestamp(query['api_data'])
 query['sensors'] = MqttWaterLevelData.get_newest("")
+convert_from_timestamp(query['sensors'])
+generate_addresses(query['sensors'])
 query['sensors_all'] = MqttWaterLevelData.get_all("")
+generate_addresses(query['sensors_all'])
 query['notifications'] = Notifications.objects.all().order_by("-time")
 query['flood_area'] = []
-
 flood_area_coordinates = [
             [
               1.084671034348597,
@@ -1489,13 +1527,10 @@ flood_area_coordinates = [
               1.084671034348597,
               51.283542731778795
             ]]
-
-def clean_flood_area():
-    for coord in flood_area_coordinates:
-        rev = [coord[1], coord[0]]
-        query['flood_area'].append(rev)
 clean_flood_area()
+#=====================================================================================================
 
+#VIEW LOADERS=========================================================================================
 def index(request):
     return render(request, 'flood_monitoring_system/index.html', {"object_list":query})
 
@@ -1504,5 +1539,6 @@ def notifications(request):
 
 def test(request):
     return render(request, 'flood_monitoring_system/test.html', {"object_list":query})
+#=====================================================================================================
 
 
