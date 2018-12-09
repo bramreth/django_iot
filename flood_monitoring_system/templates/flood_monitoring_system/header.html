@@ -57,11 +57,11 @@
                                        <li>
                                            <a href="#" class="clearfix">
                                                <div class="image">
-                                                   {% if object_list.notifications.0.severity_rating == "0" or object_list.notifications.0.severity_rating == "1" %}
+                                                   {% if object_list.notifications.0.severity_rating == 0 or object_list.notifications.0.severity_rating == 1 %}
                                                        <i class="fa fa-thumbs-up bg-success"></i>
-                                                   {% elif object_list.notifications.0.severity_rating == "2" or object_list.notifications.0.severity_rating == "3" %}
+                                                   {% elif object_list.notifications.0.severity_rating == 2 or object_list.notifications.0.severity_rating == 3 %}
                                                        <i class="fa fa-exclamation-triangle bg-warning"></i>
-                                                   {% elif object_list.notifications.0.severity_rating == "4"%}
+                                                   {% elif object_list.notifications.0.severity_rating == 4 %}
                                                         <i class="fa fa-thumbs-down bg-danger"></i>
                                                    {% else %}
                                                         <i class="fa fa-bell bg-danger"></i>
@@ -70,17 +70,17 @@
 
                                                </div>
                                                <span class="title">{{ object_list.notifications.0.severity_message }}</span>
-                                               <span class="message">{{ object_list.notifications.0.date }}</span>
+                                               <span class="message">{{ object_list.notifications.0.time }}</span>
                                            </a>
                                        </li>
                                     <li>
                                        <a href="#" class="clearfix">
                                                <div class="image">
-                                                   {% if object_list.notifications.1.severity_rating == "0" or object_list.notifications.1.severity_rating == "1" %}
+                                                   {% if object_list.notifications.1.severity_rating == 0 or object_list.notifications.1.severity_rating == 1 %}
                                                        <i class="fa fa-thumbs-up bg-success"></i>
-                                                   {% elif object_list.notifications.1.severity_rating == "2" or object_list.notifications.1.severity_rating == "3" %}
+                                                   {% elif object_list.notifications.1.severity_rating == 2 or object_list.notifications.1.severity_rating == 3 %}
                                                        <i class="fa fa-exclamation-triangle bg-warning"></i>
-                                                   {% elif object_list.notifications.1.severity_rating == "4"%}
+                                                   {% elif object_list.notifications.1.severity_rating == 4 %}
                                                         <i class="fa fa-thumbs-down bg-danger"></i>
                                                    {% else %}
                                                         <i class="fa fa-bell bg-danger"></i>
@@ -89,17 +89,17 @@
 
                                                </div>
                                                <span class="title">{{ object_list.notifications.1.severity_message }}</span>
-                                               <span class="message">{{ object_list.notifications.1.date }}</span>
+                                               <span class="message">{{ object_list.notifications.1.time }}</span>
                                            </a>
                                        </li>
                                     <li>
                                            <a href="#" class="clearfix">
                                                <div class="image">
-                                                   {% if object_list.notifications.2.severity_rating == "0" or object_list.notifications.2.severity_rating == "1" %}
+                                                   {% if object_list.notifications.2.severity_rating == 0 or object_list.notifications.2.severity_rating == 1 %}
                                                        <i class="fa fa-thumbs-up bg-success"></i>
-                                                   {% elif object_list.notifications.2.severity_rating == "2" or object_list.notifications.2.severity_rating == "3" %}
+                                                   {% elif object_list.notifications.2.severity_rating == 2 or object_list.notifications.2.severity_rating == 3 %}
                                                        <i class="fa fa-exclamation-triangle bg-warning"></i>
-                                                   {% elif object_list.notifications.2.severity_rating == "4"%}
+                                                   {% elif object_list.notifications.2.severity_rating == 4 %}
                                                         <i class="fa fa-thumbs-down bg-danger"></i>
                                                    {% else %}
                                                         <i class="fa fa-bell bg-danger"></i>
@@ -108,7 +108,7 @@
 
                                                </div>
                                                <span class="title">{{ object_list.notifications.2.severity_message }}</span>
-                                               <span class="message">{{ object_list.notifications.2.date }}</span>
+                                               <span class="message">{{ object_list.notifications.2.time }}</span>
                                            </a>
                                        </li>
                                    </ul>

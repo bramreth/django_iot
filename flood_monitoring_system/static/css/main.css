@@ -3573,6 +3573,15 @@ html.dark .input-group-addon {
 
 
 /* Notifications */
+.notification-list .icon{
+	text-align: center;
+}
+.notification-list .icon i{
+	font-size: 18px;
+	width: 32px;
+	line-height: 32px;
+	border-radius: 50px;
+}
 .notifications {
 	display: inline-block;
 	list-style: none;

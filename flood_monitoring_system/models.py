@@ -88,7 +88,8 @@ class Notifications(models.Model):
     message = models.CharField(max_length=1000)
     severity_rating = models.IntegerField()
     severity_message = models.CharField(max_length=40)
-    time = models.CharField(max_length=20, null=True)
+    time = models.DateTimeField(null=True, auto_now=False, auto_now_add=False)
+    read = models.BooleanField(default=False)
 
 class test_environmental_agency_flood_data(models.Model):
     sensor_id = models.CharField(max_length = 80)

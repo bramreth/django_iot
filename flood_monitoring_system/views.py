@@ -5,7 +5,7 @@ query = {}
 query['api_data'] = environmental_agency_flood_data.get_newest("")
 query['sensors'] = MqttWaterLevelData.get_newest("")
 query['sensors_all'] = MqttWaterLevelData.get_all("")
-query['notifications'] = Notifications.objects.all().order_by("-date")
+query['notifications'] = Notifications.objects.all().order_by("-time")
 query['flood_area'] = []
 
 flood_area_coordinates = [
@@ -1500,7 +1500,7 @@ def index(request):
     return render(request, 'flood_monitoring_system/index.html', {"object_list":query})
 
 def notifications(request):
-    return render(request, 'flood_monitoring_system/notifications.html', {"object_list":query['notifications']})
+    return render(request, 'flood_monitoring_system/notifications.html',  {"object_list":query})
 
 def test(request):
     return render(request, 'flood_monitoring_system/test.html', {"object_list":query})
