@@ -11,7 +11,7 @@ class FloodMonitoringSystemConfig(AppConfig):
     def ready(self):
 
         app_id = "kentwatersensors"
-        access_key = "ttn-account-v2.mRzaS7HOchwKsQxdj1zD-KwjxXAptb7s9pca78Nv7_U"
+        access_key = "ttn-account-v2.7j6Z9OduNwFW7il2Sd28YYF4Q-8l9rDDPaNRFw06-GM"
         port = "1883"
         address = "eu.thethings.network"
 
@@ -21,7 +21,7 @@ class FloodMonitoringSystemConfig(AppConfig):
             # feel free to tell me why im an idiot later.
             from flood_monitoring_system.models import MqttWaterLevelData
             print("Received uplink from ", msg.dev_id)
-            print("--------------")
+            print("----------------------------------------------------------------------------------------------------------------")
             print(msg.hardware_serial)
             print(msg.metadata.time)
             print(msg.payload_raw)
@@ -39,7 +39,7 @@ class FloodMonitoringSystemConfig(AppConfig):
             t = dt.split(".")[0].split("T")[1] #time
             MQTTData.time = int(time.mktime(time.strptime(d+" "+t, '%Y-%m-%d %H:%M:%S'))) * 1000 #timestamp milliseconds
             MQTTData.save()
-            print("-------------")
+            print("----------------------------------------------------------------------------------------------------------------")
 
         print("start mqtt detection")
 
@@ -54,8 +54,10 @@ class FloodMonitoringSystemConfig(AppConfig):
                 data = json.loads(json_url.read().decode())
 
             if not environmental_agency_flood_data.objects.exists():
+                print("----------------------------------------------------------------------------------------------------------------")
                 print("Environment Agency Real Time flood-monitoring API data found")
                 print("Gathering historic data")
+                print("----------------------------------------------------------------------------------------------------------------")
                 with urllib.request.urlopen("https://environment.data.gov.uk/flood-monitoring/id/stations/E3966/readings?_sorted") as historic_json_url:
                     historicdata = json.loads(historic_json_url.read().decode())
 
@@ -78,14 +80,17 @@ class FloodMonitoringSystemConfig(AppConfig):
                     EnvironmentAgencyData.time = int(
                         time.mktime(time.strptime(d + " " + t, '%Y-%m-%d %H:%M:%S'))) * 1000
                     EnvironmentAgencyData.save()
+                print("----------------------------------------------------------------------------------------------------------------")
                 print("Historic data saved")
+                print("----------------------------------------------------------------------------------------------------------------")
+
 
             while(1):
                 with urllib.request.urlopen(data["items"][0]["measures"][0]['@id']) as json_url_2:
                     waterdata = json.loads(json_url_2.read().decode())
-
+                print("----------------------------------------------------------------------------------------------------------------")
                 print("Queried Environment Agency Real Time flood-monitoring API")
-                print("-------------")
+                print("----------------------------------------------------------------------------------------------------------------")
                 print(data["items"][0]["@id"])
                 print(data["items"][0]["label"])
                 print(data["items"][0]["lat"])
@@ -94,7 +99,7 @@ class FloodMonitoringSystemConfig(AppConfig):
                 print(data["items"][0]["town"])
                 print(waterdata["items"]["latestReading"]["value"])
                 print(waterdata["items"]["latestReading"]["dateTime"])
-                print("-------------")
+                print("----------------------------------------------------------------------------------------------------------------")
                 EnvironmentAgencyData = environmental_agency_flood_data()
                 EnvironmentAgencyData.sensor_id = data["items"][0]["@id"]
                 EnvironmentAgencyData.label = data["items"][0]["label"]
@@ -112,14 +117,42 @@ class FloodMonitoringSystemConfig(AppConfig):
 
                 if (int(environmental_agency_flood_data.get_newest("")["pin_data"][0]["time"]) < EnvironmentAgencyData.time):
                     EnvironmentAgencyData.save()
-                    print("Environment Agency Real Time flood-monitoring API data saved")
+                    print("Environment Agency Real Time flood-monitoring API data SAVED")
                 else:
-                    print("Environment Agency Real Time flood-monitoring API data not saved")
+                    print("Environment Agency Real Time flood-monitoring API data NOT SAVED")
 
 
-                print("-------------")
+                print("----------------------------------------------------------------------------------------------------------------")
                 time.sleep(delay)
+
+        def query_flood_warnings(url, delay):
+            from flood_monitoring_system.models import Notifications
+
+            with urllib.request.urlopen(url) as flood_data_url:
+                floodData = json.loads(flood_data_url.read().decode())
+
+            if not floodData['items']:
+                print("No Flood")
+            else:
+                for warning in floodData['items']:
+                    print(warning['description'])
+                    if warning['description'] == "The Great Stour at Canterbury":
+                        Warning = Notifications()
+                        Warning.type = "FLOOD"
+                        Warning.message = warning['message']
+                        Warning.severity_rating = warning['severityLevel']
+                        Warning.severity_message = warning['severity']
+
+                        dt = "" + warning['timeRaised'] + "Z"  # daytime
+                        d = dt.split("T")[0]  # day
+                        t = dt.split("Z")[0].split("T")[1]  # time
+
+                        Warning.time = int(time.mktime(
+                            time.strptime(d + " " + t, '%Y-%m-%d %H:%M:%S'))) * 1000  # timestamp milliseconds
+                        Warning.save()
+
         try:
             _thread.start_new_thread(query_environment_api, ("https://environment.data.gov.uk/flood-monitoring/id/stations?RLOIid=1143", 900))
+            _thread.start_new_thread(query_flood_warnings, ("https://environment.data.gov.uk/flood-monitoring/id/floods?county=kent", 900))
         except:
             print("Error starting thread")

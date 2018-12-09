@@ -3,7 +3,6 @@ from flood_monitoring_system.models import environmental_agency_flood_data, Mqtt
 # Create your views here.
 query = {}
 query['api_data'] = environmental_agency_flood_data.get_newest("")
-print(query['api_data'])
 query['sensors'] = MqttWaterLevelData.get_newest("")
 query['sensors_all'] = MqttWaterLevelData.get_all("")
 query['flood_area'] = []
@@ -1493,7 +1492,6 @@ def clean_flood_area():
     for coord in flood_area_coordinates:
         rev = [coord[1], coord[0]]
         query['flood_area'].append(rev)
-        print(rev)
 clean_flood_area()
 
 def index(request):
