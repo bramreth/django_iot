@@ -48,25 +48,6 @@ class MqttWaterLevelData(models.Model):
             })
         #print(viewdata)
         return viewdata
-"""
-    def get_in_time(self, time_one, time_two):
-
-        viewdata = {
-            "results": []
-        }
-        for name in MqttWaterLevelData.objects.values("hardware_serial").distinct():
-            newest = MqttWaterLevelData.objects.filter(hardware_serial=name["hardware_serial"]).order_by('-time')
-            MqttWaterLevelData.objects.filter(time__regex=)
-            heights_and_times = []
-            for item in newest:
-                heights_and_times.append((item.time, item.river_height_mm))
-            viewdata["results"].append({
-                "id": name,
-                "time_reading": heights_and_times
-            })
-        print(viewdata)
-        return viewdata
-"""
 
 class environmental_agency_flood_data(models.Model):
     sensor_id = models.CharField(max_length = 80)
@@ -99,14 +80,15 @@ class environmental_agency_flood_data(models.Model):
 
 class Notifications(models.Model):
     NOTIFICATION_TYPE = (
-        ("MQTT", "MQTT service down"),
-        ("REST", "Environment Agency Real Time flood-monitoring API down"),
+        ("MQTT", "MQTT service"),
+        ("REST", "Environment Agency Real Time flood-monitoring API"),
         ("FLOOD", "Flood warning")
     )
     type = models.CharField(max_length=5, choices=NOTIFICATION_TYPE)
     message = models.CharField(max_length=1000)
     severity_rating = models.IntegerField()
     severity_message = models.CharField(max_length=40)
+    time = models.CharField(max_length=20, null=True)
 
 class test_environmental_agency_flood_data(models.Model):
     sensor_id = models.CharField(max_length = 80)
