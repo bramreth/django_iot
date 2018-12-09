@@ -9,6 +9,20 @@
 {% block maintitle %}Notifications{% endblock %}
 
 {% block maincontent %}
+    {% for n in object_list %}
+        {% if n.severity_rating == "0" or n.severity_rating == "1" %}
+            <li class="list-group-item list-group-item-success">
+        {% elif n.severity_rating  == "2" or n.severity_rating  == "3"  %}
+            <li class="list-group-item list-group-item-warning">
+        {% elif n.severity_rating  == "4" %}
+            <li class="list-group-item list-group-item-danger">
+        {% else %}
+            {#   default no color         #}
+            <li class="list-group-item list-group-item-primary">
+        {% endif %}
+        <b>{{ n.sererity_message}}: </b>n.message <small>n.time</small>
+    </li>
+    {% endfor %}
 {% endblock %}
 
 
