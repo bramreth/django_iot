@@ -179,7 +179,7 @@ class FloodMonitoringSystemConfig(AppConfig):
                     print("Found flood warnings:")
                     for warning in floodData['items']:
                         print(warning['description'])
-                        if warning['description'] == "Coast from Whitstable to Margate":
+                        if warning['description'] == "The Great Stour at Canterbury":
                             Warning = Notifications()
                             Warning.type = "FLOOD"
                             Warning.message = warning['message']
