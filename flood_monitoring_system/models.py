@@ -67,7 +67,7 @@ class environmental_agency_flood_data(models.Model):
                 {
                     "id": newest[0].sensor_id,
                     "label": newest[0].label,
-                    "river": newest[0].sensor_id,
+                    "river": newest[0].river,
                     "town": newest[0].town,
                     "lat": newest[0].lat,
                     "long": newest[0].long,
