@@ -11,7 +11,7 @@ class FloodMonitoringSystemConfig(AppConfig):
     def ready(self):
 
         app_id = "kentwatersensors"
-        access_key = "ttn-account-v2.7j6Z9OduNwFW7il2Sd28YYF4Q-8l9rDDPaNRFw06-GM"
+        access_key = "ttn-account-v2.mRzaS7HOchwKsQxdj1zD-KwjxXAptb7s9pca78Nv7_U"
         port = "1883"
         address = "eu.thethings.network"
 
