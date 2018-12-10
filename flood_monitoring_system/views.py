@@ -1,27 +1,28 @@
 #IMPORTS==============================================================================================
+from django.http import HttpResponse
 from django.shortcuts import render
 from _datetime import datetime
+import json
 from geopy.geocoders import Nominatim
-from flood_monitoring_system.models import environmental_agency_flood_data, MqttWaterLevelData, Notifications
+from flood_monitoring_system.models import environmental_agency_flood_data, MqttWaterLevelData, Notifications, \
+    Subscriber
+
+
 #====================================================================================================
 
 #MISC FUNCTIONS======================================================================================
 #Made by sam
 def convert_from_timestamp(data):
     for pin in data['pin_data']:
-        print(pin['time'])
         pin['time'] = datetime.fromtimestamp(int(pin['time'][0:10])) #remove milliseconds
     pass
+#made by sam
 def generate_addresses(data):
-    print(data)
     key = ""
     if "pin_data" in data:
-        print("PIN DATA BOI")
         key = "pin_data"
     elif "results" in data:
-        print("RESULT DATA BOI")
         key = "results"
-    print("key:" + key)
     geolocator = Nominatim(user_agent="specify_your_app_name_here")
     for d in data[key]:
         location = geolocator.reverse(str(d['lat']) + "," + str(d['long']))
@@ -1539,6 +1540,34 @@ def notifications(request):
 
 def test(request):
     return render(request, 'flood_monitoring_system/test.html', {"object_list":query})
+
+def subscribe(request):
+    return render(request, 'flood_monitoring_system/subscribe.html')
 #=====================================================================================================
 
+#POST FUNCTIONS=======================================================================================
+def subscription_process(request):
+    status = "false"
+    msg = ""
+    user = json.loads(request.body)
+    #Check if user is subscribed
+    query = Subscriber.objects.filter(full_name=user['name'], postcode=user['postcode'])
+    if query.count() > 0:
+        msg = "You are already subscribed to this area's flood alerts."
+    else:
+        s = Subscriber()
+        s.full_name = user['name']
+        s.postcode = user['postcode']
+        s.email = user['email']
+        s.save()
+        status = "true"
+        msg = "You are now successfully subscribed to this area's flood alerts."
+    js = '{"status": '+status+', "msg":"'+msg+'"}'
+    print(js)
+    return HttpResponse(js)
 
+def readnotification(request):
+    post = json.loads(request.body)
+    print(post)
+    Notifications.objects.filter(id=post['notification']).update(read=post['read'])
+    return HttpResponse("{'status':true}")

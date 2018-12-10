@@ -2,8 +2,6 @@
 .del-btn:hover{cursor:pointer;}
 
 .btn-default:hover, .btn-default:active{
-	/*background-color:#AFAFAF !important;*/
-	/*color: white;*/
 	cursor:pointer !important;
 }
 tfoot {
@@ -13,6 +11,3 @@ tfoot tr > td {
     border-top: none !important;
 }
 
-.input-error{
-	border: 1px solid red;
-}

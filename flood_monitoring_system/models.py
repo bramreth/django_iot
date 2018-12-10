@@ -1,3 +1,5 @@
+from email._header_value_parser import Domain
+
 from django.db import models
 
 # Create your models here.
@@ -92,6 +94,10 @@ class Notifications(models.Model):
     severity_message = models.CharField(max_length=40)
     time = models.DateTimeField(null=True, auto_now=False, auto_now_add=False)
     read = models.BooleanField(default=False)
+    #
+    # def __init__(self, *args, **kwargs):
+    #     super(Notifications, self).__init__(*args, **kwargs)
+    #     self.fields['type'].choices = [(c.id, c.name) for c in Domain.objects.all()]
 
 class test_environmental_agency_flood_data(models.Model):
     sensor_id = models.CharField(max_length = 80)
@@ -121,3 +127,9 @@ class test_environmental_agency_flood_data(models.Model):
             ]
         }
         return viewdata
+
+class Subscriber(models.Model):
+    id = models.AutoField(primary_key=True)
+    full_name = models.CharField(max_length=50)
+    postcode = models.CharField(max_length=8)
+    email = models.CharField(max_length=50)

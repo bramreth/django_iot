@@ -1,0 +1,51 @@
+{% extends "flood_monitoring_system/header.html" %}
+{% load staticfiles%}
+
+{% block header %}
+<script src="{% static 'lib/jquery-cookie/jquery.cookie.js' %}"></script>
+<script src="{% static 'js/subscribe.js' %}"></script>
+{% endblock %}
+
+{% block maintitle %}Subscription Service{% endblock %}
+
+{% block maincontent %}
+<h2>Subscribe to flood alerts in your area</h2>
+<form>
+    <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-12 ">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" class="form-control" id="name" placeholder="John Smith">
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12">
+            <label>Postcode</label>
+            <div class="form-group input-group">
+                <input type="text" class="form-control" id="postcode" placeholder="CT2 7NZ">
+                <div class="input-group-addon">
+                    <p id="view-data-btn" class="btn btn-secondary" type="button">View Data</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="form-group">
+            <label>Email address</label>
+            <input type="email" class="form-control" id="email" placeholder="example@gmail.com">
+          </div>
+        </div>
+    </div>
+    <p id="subscribe" class="btn btn-primary">Subscribe</p>
+    <br><br>
+    <div class="row">
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <small id="form-msg" class="list-group-item"></small>
+        </div>
+    </div>
+</form>
+
+
+{% endblock %}
+
+
