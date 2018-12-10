@@ -13,39 +13,40 @@ class FloodMonitoringSystemConfig(AppConfig):
         app_id = "kentwatersensors"
         access_key = "ttn-account-v2.mRzaS7HOchwKsQxdj1zD-KwjxXAptb7s9pca78Nv7_U"
         port = "1883"
-        address = "eu.thethings.network"
+        address = "lora.kent.ac.uk" #"eu.thethings.network"
 
         def uplink_callback(msg, client):
-            # this likely isnt the best method of passing data to the database, the issue is the whole app isn't
-            # ready at the start of this file so we cant import the models until this ready function is called
-            # feel free to tell me why im an idiot later.
-            from flood_monitoring_system.models import MqttWaterLevelData
-            print("Received uplink from ", msg.dev_id)
-            print("----------------------------------------------------------------------------------------------------------------")
-            print(msg.hardware_serial)
-            print(msg.metadata.time)
-            print(msg.payload_raw)
-            print(msg.metadata.altitude)
-            print(msg.metadata.longitude)
-            print(msg.metadata.latitude)
-            MQTTData = MqttWaterLevelData()
-            MQTTData.hardware_serial = msg.hardware_serial
-            MQTTData.longitude = msg.metadata.longitude
-            MQTTData.latitude = msg.metadata.latitude
-            MQTTData.altitude = msg.metadata.altitude
-            MQTTData.river_height_mm = int.from_bytes(base64.b64decode(""+msg.payload_raw+""), 'big')  # int(base64.b64decode(msg.payload_raw).encode('hex'), 16)
-            dt = ""+msg.metadata.time+"" #daytime
-            d = dt.split("T")[0]   #day
-            t = dt.split(".")[0].split("T")[1] #time
-            MQTTData.time = int(time.mktime(time.strptime(d+" "+t, '%Y-%m-%d %H:%M:%S'))) * 1000 #timestamp milliseconds
-            MQTTData.save()
-            print("----------------------------------------------------------------------------------------------------------------")
-
+            try:
+                print("hello?!")
+                from flood_monitoring_system.models import MqttWaterLevelData
+                print("Received uplink from ", msg.dev_id)
+                print("----------------------------------------------------------------------------------------------------------------")
+                print(msg.hardware_serial)
+                print(msg.metadata.time)
+                print(msg.payload_raw)
+                print(msg.metadata.altitude)
+                print(msg.metadata.longitude)
+                print(msg.metadata.latitude)
+                MQTTData = MqttWaterLevelData()
+                MQTTData.hardware_serial = msg.hardware_serial
+                MQTTData.longitude = msg.metadata.longitude
+                MQTTData.latitude = msg.metadata.latitude
+                MQTTData.altitude = msg.metadata.altitude
+                MQTTData.river_height_mm = int.from_bytes(base64.b64decode(""+msg.payload_raw+""), 'big')  # int(base64.b64decode(msg.payload_raw).encode('hex'), 16)
+                dt = ""+msg.metadata.time+"" #daytime
+                d = dt.split("T")[0]   #day
+                t = dt.split(".")[0].split("T")[1] #time
+                MQTTData.time = int(time.mktime(time.strptime(d+" "+t, '%Y-%m-%d %H:%M:%S'))) * 1000 #timestamp milliseconds
+                MQTTData.save()
+                print("----------------------------------------------------------------------------------------------------------------")
+            except Exception as error:
+                print("Error: ", repr(error))
+                raise
         print("start mqtt detection")
 
         mqtt_client = ttn.MQTTClient(app_id, access_key, mqtt_address=address)
         mqtt_client.set_uplink_callback(uplink_callback)
-        #mqtt_client.connect()
+        mqtt_client.connect()
 
         def query_environment_api(url, delay):
             from flood_monitoring_system.models import environmental_agency_flood_data
