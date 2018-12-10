@@ -39,6 +39,7 @@ def clean_flood_area():
 #GLOBAL DATA==========================================================================================
 query = {}
 query['api_data'] = environmental_agency_flood_data.get_newest("")
+query['api_data_all'] = environmental_agency_flood_data.get_all("")
 convert_from_timestamp(query['api_data'])
 query['sensors'] = MqttWaterLevelData.get_newest("")
 convert_from_timestamp(query['sensors'])

@@ -82,6 +82,22 @@ class environmental_agency_flood_data(models.Model):
         }
         return viewdata
 
+    def get_all(self):
+        newest = environmental_agency_flood_data.objects.order_by('-time')
+        viewdata = {
+            "results": []
+        }
+        heights_and_times = []
+        for item in newest:
+            heights_and_times.append((item.time, item.reading*1000))
+            viewdata["results"].append({
+                "id": newest[0].label,
+                "time_reading": heights_and_times,
+                "lat": newest[0].lat,
+                "long": newest[0].long,
+            })
+        return viewdata
+
 class Notifications(models.Model):
     NOTIFICATION_TYPE = (
         ("MQTT", "MQTT service"),
