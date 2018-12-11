@@ -8,7 +8,10 @@ urlpatterns = [
     url(r'^notifications/$', views.notifications, name='notifications'),
     url(r'^test/$', views.test, name='test'),
     url(r'^subscribe/$', views.subscribe, name='subscribe'),
-    url(r'^subscription/$', views.subscription_process, name='subscription_process'),
-    url(r'^readnotification/$', views.readnotification, name='readnotification')
+    url(r'^unsub/$', views.unsub, name='unsub'),
+    url(r'^readnotification/$', views.readnotification, name='readnotification'),
+    url(r'^login/$', views.login, name='login'),
+    url(r'^logout/$', views.logout, name='logout'),
+    url(r'^create-account/$', views.create_account, name='create_account'),
 ]
 

@@ -54,8 +54,8 @@ class MqttWaterLevelData(models.Model):
         return viewdata
 
 class environmental_agency_flood_data(models.Model):
-    sensor_id = models.CharField(max_length = 80)
-    label = models.CharField(max_length = 40)
+    sensor_id = models.CharField(max_length=80)
+    label = models.CharField(max_length=40)
     town = models.CharField(max_length=40)
     river = models.CharField(max_length=40)
     lat = models.DecimalField(max_digits=9, decimal_places=7)
@@ -98,22 +98,6 @@ class environmental_agency_flood_data(models.Model):
             })
         return viewdata
 
-class Notifications(models.Model):
-    NOTIFICATION_TYPE = (
-        ("MQTT", "MQTT service"),
-        ("REST", "Environment Agency Real Time flood-monitoring API"),
-        ("FLOOD", "Flood warning")
-    )
-    type = models.CharField(max_length=5, choices=NOTIFICATION_TYPE)
-    message = models.CharField(max_length=1000)
-    severity_rating = models.IntegerField()
-    severity_message = models.CharField(max_length=40)
-    time = models.DateTimeField(null=True, auto_now=False, auto_now_add=False)
-    read = models.BooleanField(default=False)
-    #
-    # def __init__(self, *args, **kwargs):
-    #     super(Notifications, self).__init__(*args, **kwargs)
-    #     self.fields['type'].choices = [(c.id, c.name) for c in Domain.objects.all()]
 
 class test_environmental_agency_flood_data(models.Model):
     sensor_id = models.CharField(max_length = 80)
@@ -124,6 +108,7 @@ class test_environmental_agency_flood_data(models.Model):
     long = models.DecimalField(max_digits=10, decimal_places=7)
     reading = models.FloatField()
     time = models.DateTimeField(auto_now=False, auto_now_add=False)
+    station = models.CharField(null=False, default=False, max_length=10)
 
     def get_newest(self):
         newest = test_environmental_agency_flood_data.objects.order_by('-time')[:1]
@@ -144,8 +129,27 @@ class test_environmental_agency_flood_data(models.Model):
         }
         return viewdata
 
-class Subscriber(models.Model):
+class User(models.Model):
     id = models.AutoField(primary_key=True)
     full_name = models.CharField(max_length=50)
-    postcode = models.CharField(max_length=8)
     email = models.CharField(max_length=50)
+    password = models.CharField(max_length=64)
+
+class Subscriptions(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, null=False, default=False, on_delete=models.CASCADE)
+    station = models.CharField(max_length=10)
+
+class Notifications(models.Model):
+    NOTIFICATION_TYPE = (
+        ("MQTT", "MQTT service"),
+        ("REST", "Environment Agency Real Time flood-monitoring API"),
+        ("FLOOD", "Flood warning")
+    )
+    user = models.ForeignKey(User, null=False, default=False, on_delete=models.CASCADE)
+    type = models.CharField(max_length=5, choices=NOTIFICATION_TYPE)
+    message = models.CharField(max_length=1000)
+    severity_rating = models.IntegerField()
+    severity_message = models.CharField(max_length=40)
+    time = models.DateTimeField(null=True, auto_now=False, auto_now_add=False)
+    read = models.BooleanField(default=False)

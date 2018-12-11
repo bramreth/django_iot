@@ -1,11 +1,13 @@
 #IMPORTS==============================================================================================
+import hashlib
+from flood_monitoring_system.forms import loginForm, createAccountForm
 from django.http import HttpResponse
 from django.shortcuts import render
 from _datetime import datetime
+from validate_email import validate_email
 import json
 from geopy.geocoders import Nominatim
-from flood_monitoring_system.models import environmental_agency_flood_data, MqttWaterLevelData, Notifications, \
-    Subscriber
+from flood_monitoring_system.models import environmental_agency_flood_data, MqttWaterLevelData, Notifications, User, Subscriptions
 
 
 #====================================================================================================
@@ -1530,45 +1532,169 @@ flood_area_coordinates = [
               51.283542731778795
             ]]
 clean_flood_area()
+cookie = {
+    "id": "",
+    "full_name": "",
+    "email": "",
+}
 #=====================================================================================================
 
 #VIEW LOADERS=========================================================================================
 def index(request):
-    return render(request, 'flood_monitoring_system/index.html', {"object_list":query})
+    page = 'flood_monitoring_system/index.html'
+    if is_logged_in(request):
+        return render(request, page, {"object_list": query, "cookie": cookie})
+    else:
+        return login(request)
+
 
 def notifications(request):
-    return render(request, 'flood_monitoring_system/notifications.html',  {"object_list":query})
+    page = 'flood_monitoring_system/error.html'
+    if is_logged_in(request):
+        page = 'flood_monitoring_system/notifications.html'
+    return render(request, page, {"object_list": query, "cookie": cookie})
 
 def test(request):
-    return render(request, 'flood_monitoring_system/test.html', {"object_list":query})
+    page = 'flood_monitoring_system/error.html'
+    if is_logged_in(request):
+        page = 'flood_monitoring_system/test.html'
+    return render(request, page, {"object_list": query, "cookie": cookie})
+
 
 def subscribe(request):
-    return render(request, 'flood_monitoring_system/subscribe.html')
+    page = 'flood_monitoring_system/error.html'
+    # if the form was submitted
+    subscriptions = {}
+    msg = ""
+    if request.method == "POST":
+        post = request.POST
+        user = User.objects.filter(email=cookie['email'])[0]
+        station_id = post['station']
+        #check if already subbed
+        rows = Subscriptions.objects.filter(user=user, station=station_id)
+        if rows.count() > 0:
+            #already subbed
+            msg = "You are already subscribed to this station."
+        else:
+            #else add subscription
+            sub = Subscriptions()
+            sub.station = station_id
+            sub.user = user
+            sub.save()
+            msg = "You are now subscribed to this station."
+    if is_logged_in(request):
+        page = 'flood_monitoring_system/subscribe.html'
+        user = User.objects.filter(email=cookie['email'])[0]
+        subscriptions = Subscriptions.objects.filter(user=user)
+    return render(request, page, {"object_list": query, "cookie": cookie, "subs": subscriptions, "msg": msg })
+#=====================================================================================================
+
+#LOGIN SESSION LOGIC==================================================================================
+def login(request):
+    #if the form was submitted
+    if request.method == "POST":
+        post = request.POST
+        pw = hashlib.sha256(post['password'].encode('utf-8')).hexdigest()
+        user = User.objects.filter(email=post['email'])
+        if user.count() > 0:
+            if user[0].password == pw:
+                print("LOGGED IN")
+                #logged in successful
+                cookie['id'] = user[0].id
+                cookie['full_name'] = user[0].full_name
+                cookie['email'] = user[0].email
+
+    #check if user is logged in
+    if not is_logged_in(request):
+        form = loginForm()
+        return render(request, 'flood_monitoring_system/login.html', {'form': form, "cookie": cookie})
+    else:
+        return index(request)
+
+def is_logged_in(request):
+    authorised = False
+    if "email" in cookie:
+        user = User.objects.filter(email=cookie['email'])
+        print(user.count())
+        if user.count() > 0:
+            authorised = True
+    return authorised
+
+def logout(request):
+    cookie['id'] = ""
+    cookie['full_name'] = ""
+    cookie['email'] = ""
+    return login(request)
+#=====================================================================================================
+
+#CREATE USER==========================================================================================
+
+def create_account(request):
+    page = 'flood_monitoring_system/create_user.html'
+    msg_good = ""
+    msg_bad = ""
+    form = createAccountForm()
+
+    if request.method == "POST":
+        valid = True
+        post = request.POST
+        name = post['name']
+        email = post['email']
+        password = post['password']
+        password_redo = post['password_redo']
+        if not len(name) > 1:
+            valid = False
+            msg_bad += "Full name is too short. "
+        if password_redo != password:
+            valid = False
+            msg_bad += "Passwords do not match. "
+        if not validate_email(email):
+            valid = False
+            msg_bad += "The email you've entered is invalid. "
+        else:
+            #check if email already exists
+            user = User.objects.filter(email=email)
+            if user.count() > 0:
+                valid = False
+                msg_bad += "The email you've entered already is registered to our system. "
+        if valid:
+            user = User()
+            user.full_name = name
+            user.email = email
+            user.password = hashlib.sha256(password.encode('utf-8')).hexdigest()
+            user.save()
+            msg_good += "Your account has been created Successfully. "
+    if is_logged_in(request):
+        page = 'flood_monitoring_system/error.html'
+    return render(request, page, {'form': form, 'msg_good': msg_good,'msg_bad': msg_bad, 'cookie': cookie})
 #=====================================================================================================
 
 #POST FUNCTIONS=======================================================================================
-def subscription_process(request):
-    status = "false"
-    msg = ""
-    user = json.loads(request.body)
-    #Check if user is subscribed
-    query = Subscriber.objects.filter(full_name=user['name'], postcode=user['postcode'])
-    if query.count() > 0:
-        msg = "You are already subscribed to this area's flood alerts."
-    else:
-        s = Subscriber()
-        s.full_name = user['name']
-        s.postcode = user['postcode']
-        s.email = user['email']
-        s.save()
-        status = "true"
-        msg = "You are now successfully subscribed to this area's flood alerts."
-    js = '{"status": '+status+', "msg":"'+msg+'"}'
-    print(js)
-    return HttpResponse(js)
+def unsub(request):
+    res="{}"
+    if request.method == "POST":
+        status = "false"
+        post = json.loads(request.body)
+        msg = "An error occurred whilst unsubscribing. Please try again later."
+
+        #make sure they're logged in
+        user = User.objects.filter(email=cookie['email'])
+        if user.count() > 0:
+            user = user[0]
+            #make sure station exists
+            stations = Subscriptions.objects.filter(station=post['station'], user=user)
+            if stations.count() > 0:
+                #if its exists delete
+                print("STATION:")
+                print(stations)
+                print(stations[0])
+                stations[0].delete()
+                msg = "You have successfully unsubscribed"
+                status = "true"
+        res = '{"status": '+status+', "msg":"'+msg+'"}'
+    return HttpResponse(res)
 
 def readnotification(request):
-    post = json.loads(request.body)
-    print(post)
+    post = json.loads(request.body.decode())
     Notifications.objects.filter(id=post['notification']).update(read=post['read'])
     return HttpResponse("{'status':true}")

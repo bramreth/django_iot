@@ -1,9 +1,4 @@
-.del-btn{ margin: 10px; float:right;text-align:right;}
-.del-btn:hover{cursor:pointer;}
 
-.btn-default:hover, .btn-default:active{
-	cursor:pointer !important;
-}
 tfoot {
     border-top: 1px solid #dddddd !important;
 }

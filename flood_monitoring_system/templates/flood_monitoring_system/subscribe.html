@@ -9,43 +9,41 @@
 {% block maintitle %}Subscription Service{% endblock %}
 
 {% block maincontent %}
-<h2>Subscribe to flood alerts in your area</h2>
-<form>
-    <div class="row">
-        <div class="col-md-3 col-sm-3 col-xs-12 ">
-            <div class="form-group">
-                <label>Full Name</label>
-                <input type="text" class="form-control" id="name" placeholder="John Smith">
-          </div>
-        </div>
-        <div class="col-md-3 col-sm-3 col-xs-12">
-            <label>Postcode</label>
+<div class="row">
+    <div class="col-md-6 col-sm-6 col-xs-12">
+        <h3>Subscribe to other flood alerts</h3>
+        <form action="" method="post">
+            {% csrf_token %}
+            <label>Select from available stations</label>
             <div class="form-group input-group">
-                <input type="text" class="form-control" id="postcode" placeholder="CT2 7NZ">
+                <select type="text" class="form-control" id="station-select" name="station">
+                    <option selected disabled>--Select Station--</option>
+                </select>
                 <div class="input-group-addon">
-                    <p id="view-data-btn" class="btn btn-secondary" type="button">View Data</p>
+                    <p id="view-data-btn" class="btn btn-secondary" type="button">View StationData</p>
                 </div>
             </div>
-        </div>
+            <input id="subscribe" type="submit" class="btn btn-primary" value="Subscribe to Station"/>
+            <p>{{ msg }}</p>
+        </form>
+        <ul id="data-preview"></ul>
     </div>
-    <div class="row">
-        <div class="col-md-6 col-sm-6 col-xs-12">
-            <div class="form-group">
-            <label>Email address</label>
-            <input type="email" class="form-control" id="email" placeholder="example@gmail.com">
-          </div>
-        </div>
+    <div class="col-md-6  col-sm-6 col-xs-12">
+        <h3>Subscribed Stations</h3>
+         <div id="sub-list">
+         {% for s in subs %}
+             <div class='row list-group-item' >
+                <div class="col-md-11">
+                    <p>{{ s.station }}</p>
+                </div>
+                 <div class="col-md-1">
+                     <p class="del-btn" station="{{ s.station }}"><i class="fas fa-times"></i></p>
+                 </div>
+             </div>
+         {% endfor %}
+         </div>
     </div>
-    <p id="subscribe" class="btn btn-primary">Subscribe</p>
-    <br><br>
-    <div class="row">
-        <div class="col-md-6 col-sm-6 col-xs-12">
-            <small id="form-msg" class="list-group-item"></small>
-        </div>
-    </div>
-</form>
-
-
+ </div>
 {% endblock %}
 
 

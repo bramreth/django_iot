@@ -1,71 +1,79 @@
+let data= {};
+let data_preview;
+let view_data_btn;
+let station_select;
 $( document ).ready(function(){
-	$('#form-msg').hide();
-	$("#subscribe").click(function() {
-		let msg = "";
-        if(form_is_valid()){
-        	let sent = false;
-			let dataString =JSON.stringify({name: $("#name").val(),postcode: $("#postcode").val(),email: $("#email").val()})
+	$.ajax({
+	   url: "https://environment.data.gov.uk/flood-monitoring/id/stations?_limit=50",
+	   async:false,
+	   success: function (d) {
+		  data = d.items;
+	   }
+	});
+
+	station_select = $("#station-select");
+	view_data_btn = $("#view-data-btn");
+	data_preview = $("#data-preview");
+
+	for(let i = 0; i< data.length; i++){
+        station_select.append(new Option(data[i].label, data[i].RLOIid));
+    }
+	//SORT-----------------------------------------------
+	var options = $('#station-select option');
+	let arr = options.map(function(_, o) {
+        return {
+            t: $(o).text(),
+            v: o.value
+        };
+    }).get();
+	arr.sort(function(o1, o2) {
+        return o1.t > o2.t ? 1 : o1.t < o2.t ? -1 : 0;
+    });
+    options.each(function(i, o) {
+        o.value = arr[i].v;
+        $(o).text(arr[i].t);
+    });
+    //--------------------------------------------------
+
+	//BUTTON LISTENERS
+    view_data_btn.click(function() {
+    	data_preview.empty();
+	  id = station_select.val();
+	  item = {};
+	  for(let i = 0; i< data.length; i++){
+         if(data[i].RLOIid == id){
+         	item = data[i];
+		 }
+	  }
+       for (var k in item) {
+       	data_preview.append("<li class='list-group-item'><b>"+k+":</b> "+item[k]+"</li>");
+       }
+	});
+
+    $( document).on( "click", ".del-btn" ,function() {
+		//if accepted
+		var btn = $(this);
+		if (confirm('Are you sure you want unsubscribe from this station?')) {
+			let dataString =JSON.stringify({station: $(this).attr("station")})
 			$.ajax({
-			   url: "/subscription/",
+			   url: "/unsub/",
 			   type: "post",
 			   timeout: 1000,
 			   datatype: "json",
 			   data: dataString,
-			   async:false,
-			   success: function (data) {
-				   let d = $.parseJSON(data);
-				   if(d.status){
-					sent = true;
-				   }
-				   msg = d.msg
-			   },
-			    error: function(XMLHttpRequest, textStatus, errorThrown) {
-			   	    msg = "Error whilst subscribing. Please try again later.";
+				success: function(d){
+			   		d = $.parseJSON(d);
+					console.log(d.status);
+					if(d.status){
+						let wanted = btn.parent().parent();
+    					if (wanted.hasClass('row')) wanted.remove();
+					}
 				}
 			});
-            if(sent){
-                $('#form-msg').addClass("list-group-item-success");
-				$('#form-msg').removeClass("list-group-item-danger");
-            }else{
-				$('#form-msg').addClass("list-group-item-danger");
-				$('#form-msg').removeClass("list-group-item-success");
-			}
-        }else{
-			msg = "Please fill in the form correctly.";
-			$('#form-msg').addClass("list-group-item-danger");
-			$('#form-msg').removeClass("list-group-item-success");
 		}
-        $('#form-msg').text(msg);
-		$('#form-msg').show();
-    });
-
-	$("#view-data-btn").click(function () {
-		if(validatePostcode($(this))){
-			$.ajax({
-			   url: "/subscription/",
-			   type: "post",
-			   timeout: 1000,
-			   datatype: "json",
-			   data: dataString,
-			   async:false,
-			   success: function (data) {
-				   let d = $.parseJSON(data);
-				   console.log(d)
-			   }
-			});
-		}
-    });
-
-	var timeoutId;
-	$(document).on('keyup change', 'input',function() {
-			clearTimeout(timeoutId);
-			let input = $(this);
-			timeoutId = setTimeout(function() {
-				validate(input);
-		}, 1000, input);
 	});
-	var csrftoken = $.cookie('csrftoken');
 
+    var csrftoken = $.cookie('csrftoken');
 	$.ajaxSetup({
 		beforeSend: function(xhr, settings) {
 			if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
@@ -81,73 +89,6 @@ $( document ).ready(function(){
     }
     });
 });
-
-
-
-//VALIDATORS===================================================================
-function form_is_valid(){
-	let valid = true;
-	let form = [$("#name"), $("#postcode"), $("#email")];
-	for(let i = 0; i < form.length; i++){
-		let item  = form[i];
-		if(validate(item) == false){
-			valid = false
-		}
-	}
-	return valid;
-}
-
-function validate(item){
-	let valid = true;
-	let type = item.attr('id');
-	if(type == "name"){
-		if(!validateName(item)){
-			valid = false;
-			item.addClass("input-error");
-		}else{
-			item.removeClass("input-error");
-		}
-	}else if(type == "postcode"){
-		if(!validatePostcode(item)){
-			valid = false;
-			item.addClass("input-error");
-		}else{
-			item.removeClass("input-error");
-		}
-	}else if(type == "email"){
-		if(!validateEmail(item)){
-			valid = false;
-			item.addClass("input-error");
-		}else{
-			item.removeClass("input-error");
-		}
-	}
-	return valid;
-}
-
-function validateEmail(item){
-	let email = item.val();
-	let re = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
-	return re.test(email);
-}
-
-function validatePostcode(item){
-	let pc = item.val();
-	if (pc !== null){
-		pc = pc.toUpperCase();
-		var re =  new RegExp("^([A-PR-UWYZ0-9][A-HK-Y0-9][AEHMNPRTVXY0-9]{0,1}[ABEHMNPRVWXY0-9]{0,1} {1,2}[0-9][ABD-HJLN-UW-Z]{2}|GIR 0AA)$");
-		var re2 = new RegExp("^([A-PR-UWYZ0-9][A-HK-Y0-9][AEHMNPRTVXY0-9]?[ABEHMNPRVWXY0-9]? {0,2}[0-9][ABD-HJLN-UW-Z]{2}|GIR ?0AA)$");
-		if(re.test(pc) || re2.test(pc)){
-			return true;
-		}
-	}
-	return false;
-}
-
-function validateName(item){
-	let name = item.val();
-	return name.length > 1;
-}
 
 function csrfSafeMethod(method) {
 	return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
