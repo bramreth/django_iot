@@ -16,10 +16,10 @@
 
 {% block maincontent %}
 <h2>Data from Sensors</h2>
-<table id="table" class="table">
+<table id="sensor-table" class="table">
   <thead>
     <tr>
-      <th scope="col">Device</th>
+      <th scope="col">Sensor</th>
       <th scope="col">River height (mm)</th>
       <th scope="col">Time</th>
     </tr>
@@ -27,7 +27,7 @@
   <tbody>
     <tr>
       <td>
-          <select name="device" class="custom-select" id="device-1" style="width:100%;">
+          <select class="custom-select" id="device-select-1" style="width:100%;">
              <option selected disabled>--Select Device--</option>
               {% for device in object_list.sensors_all.results %}
                    <option >{{ device.id.hardware_serial  }}</option>
@@ -35,10 +35,104 @@
           </select>
       </td>
       <td>
-          <input name="water" type="number" id="waterlevel-1" class="form-control" placeholder="1000">
+          <input type="number" id="device-water-level-1" class="form-control" placeholder="1000">
       </td>
       <td>
-          <input name="date" type="text" id="date-1" class="form-control"  placeholder="DD/MM/YYY hh:mm">
+          <input type="text" id="device-date-1" class="form-control"  placeholder="DD/MM/YYY hh:mm">
+      </td>
+      <td>
+         <div class="form-group">
+           <p class="del-btn"><i class="fas fa-times"></i></p>
+         </div>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+      <tr>
+         <td>
+            <p class="btn btn-secondary add-btn"><i class="fas fa-plus"></i> Add</p>
+         </td>
+      </tr>
+  </tfoot>
+</table>
+<br><br><br>
+<h2>Data from Stations</h2>
+<table id="station-table" class="table">
+  <thead>
+    <tr>
+      <th scope="col">Station</th>
+      <th scope="col">River height (mm)</th>
+      <th scope="col">Time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+          <select class="custom-select" id="station-select-1" style="width:100%;">
+             <option selected disabled>--Select Device--</option>
+          </select>
+      </td>
+      <td>
+          <input type="number" id="station-waterlevel-1" class="form-control" placeholder="1000">
+      </td>
+      <td>
+          <input type="text" id="station-date-1" class="form-control"  placeholder="DD/MM/YYY hh:mm">
+      </td>
+      <td>
+         <div class="form-group">
+           <p class="del-btn"><i class="fas fa-times"></i></p>
+         </div>
+      </td>
+    </tr>
+  </tbody>
+  <tfoot>
+      <tr>
+         <td>
+            <p class="btn btn-secondary add-btn"><i class="fas fa-plus"></i> Add</p>
+         </td>
+      </tr>
+  </tfoot>
+</table>
+<br><br><br>
+<h2>Notifications</h2>
+<table id="notification-table" class="table">
+  <thead>
+    <tr>
+      <th scope="col">Type</th>
+      <th scope="col">Message</th>
+      <th scope="col">Severity Rating</th>
+      <th scope="col">Severity Message</th>
+      <th scope="col">time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+          <select name="notification-type-1" class="custom-select" id="notification-type-1" style="width:100%;">
+              <option selected disabled>--Select Type--</option>
+              <option value="MQTT service">MQTT service</option>
+              <option value="Environment Agency Real Time flood-monitoring API">Environment Agency Real Time flood-monitoring API</option>
+              <option value="Flood warning">Flood warning</option>
+          </select>
+      </td>
+      <td>
+          <input name="notification-message-1" type="text" id="notification-message-1" class="form-control" >
+      </td>
+      <td>
+          <select name="severity-rating-1" class="custom-select" id="severity-rating-1" style="width:100%;">
+              <option selected disabled>--Select Rating--</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+          </select>
+      </td>
+      <td>
+          <input name="severity-message-1" type="text" id="severity-message-1" class="form-control">
+      </td>
+      <td>
+          <input type="text" id="notification-date-1" class="form-control"  placeholder="DD/MM/YYY hh:mm">
       </td>
       <td>
          <div class="form-group">
