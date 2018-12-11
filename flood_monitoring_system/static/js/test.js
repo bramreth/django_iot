@@ -1,10 +1,46 @@
-
 $( function(){
-	$( "#date-1" ).datetimepicker();
+	$( "#device-date-1" ).datetimepicker();
+	$( "#station-date-1" ).datetimepicker();
+	$( "#notification-date-1" ).datetimepicker();
+
 	$( "#stats" ).hide();
 });
-
+let tables = [];
 $( document ).ready(function(){
+//DEFINE TABLES
+ tables = ["#station-table", "#sensor-table"];
+
+//POPULATE STATIONS SELECT===========================================================
+	$.ajax({
+	   url: "http://127.0.0.1:8000/get-stations/",
+	   async:false,
+	   success: function (d) {
+		  data = d;
+	   }
+	});
+
+	station_select = $("#station-select-1");
+
+	for(let i = 0; i< data.length; i++){
+        station_select.append(new Option(data[i]['fields'].label, data[i]['fields'].RLOIid));
+    }
+
+	//SORT-----------------------------------------------
+	var options = $('#station-select-1 option');
+	let arr = options.map(function(_, o) {
+        return {
+            t: $(o).text(),
+            v: o.value
+        };
+    }).get();
+	arr.sort(function(o1, o2) {
+        return o1.t > o2.t ? 1 : o1.t < o2.t ? -1 : 0;
+    });
+    options.each(function(i, o) {
+        o.value = arr[i].v;
+        $(o).text(arr[i].t);
+    });
+    //--------------------------------------------------
 
 //TABLE JS===========================================================================
 	//ADD BUTTON
@@ -117,8 +153,10 @@ $( document ).ready(function(){
   	//GENERATE RESULTS
 	$("#gen").click(function() {
 		if(form_is_valid()){
-            // $("#stats").show();
-        }
+            console.log("yes");
+        }else{
+			console.log("no");
+		}
 	});
 
 
@@ -140,16 +178,21 @@ $( document ).ready(function(){
 //VALIDATORS===================================================================
 function form_is_valid(){
 	let valid = true;
-	let table = getTableContents("table");
-	for(let i = 0; i < table.length; i++){
-		for(let j = 0; j < table[i].length; j++){
-			let item  = table[i][j];
-			validate(item);
-		}
-	}
+	for(var x = 0; x < tables.length; x++) {
+        let table = getTableContents(tables[x]);
+        for (let i = 0; i < table.length; i++) {
+            for (let j = 0; j < table[i].length; j++) {
+                let item = table[i][j];
+                if(!validate(item)){
+                	valid = false;
+				}
+            }
+        }
+    }
 	return valid;
 }
 function validate(item){
+	let valid = true;
 	let type = item.attr('name');
 	if(type == "device"){
 		if(!isSelected(item)){
@@ -173,6 +216,7 @@ function validate(item){
 			item.removeClass("input-error");
 		}
 	}
+	return valid;
 }
 
 function validateDate(item){
@@ -193,7 +237,6 @@ function isSelected(item){
 //MISC=========================================================================
 function getTableContents(tableId){
 	var table = $(tableId).children('tbody');
-	//console.log(table);
 	var tableRow = table.find("tr:first-child");
 	var numOfRows = table.prop('rows').length;
 	var arr = [];

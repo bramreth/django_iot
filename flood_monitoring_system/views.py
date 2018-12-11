@@ -1,13 +1,14 @@
 #IMPORTS==============================================================================================
 import hashlib
 from flood_monitoring_system.forms import loginForm, createAccountForm
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.core import serializers
 from django.shortcuts import render
 from _datetime import datetime, timedelta
 from validate_email import validate_email
 import json
 from geopy.geocoders import Nominatim
-from flood_monitoring_system.models import environmental_agency_flood_data, MqttWaterLevelData, Notifications, User, Subscriptions
+from flood_monitoring_system.models import environmental_agency_flood_data, MqttWaterLevelData, Notifications, User, Subscriptions,StationInformation
 
 
 #====================================================================================================
@@ -45,7 +46,6 @@ def clean_flood_area():
 #GLOBAL DATA==========================================================================================
 
 query = {}
-
 def update_dictionaries():
     print("update view dictionaries for clients in real time")
     query['api_data'] = environmental_agency_flood_data.get_newest("")
@@ -1712,7 +1712,6 @@ def unsub(request):
         status = "false"
         post = json.loads(request.body)
         msg = "An error occurred whilst unsubscribing. Please try again later."
-
         #make sure they're logged in
         user = User.objects.filter(email=cookie['email'])
         if user.count() > 0:
@@ -1734,3 +1733,19 @@ def readnotification(request):
     post = json.loads(request.body.decode())
     Notifications.objects.filter(id=post['notification']).update(read=post['read'])
     return HttpResponse("{'status':true}")
+
+#=====================================================================================================
+
+#GET FUNCTIONS========================================================================================
+
+def get_stations(request):
+    if is_logged_in(request):
+        if request.method == "GET":
+            json_send = StationInformation.objects.all()
+            # return JsonResponse(json_send, safe=False)
+        data = serializers.serialize('json',json_send)
+        return HttpResponse(data, content_type="application/json")
+    else:
+        return render(request, 'flood_monitoring_system/error.html', {"object_list": query, "cookie": cookie})
+
+#=====================================================================================================b
