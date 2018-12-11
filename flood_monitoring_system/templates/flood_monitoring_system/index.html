@@ -96,7 +96,7 @@ function toogleDataSeries(e){
 function filter_all(){
     console.log(tst.toString())
     delete chart.options.axisX.minimum
-    document.getElementById("filter_val").textContent = "show all time"
+    document.getElementById("filter_val").textContent = "all time"
     //chart.options.axisX.minimum = tst.getTime()
     //console.log(chart.axisX.minimum)
     chart.render()
@@ -107,9 +107,9 @@ function filter_by_days_prior(days){
     tst.setDate(tst.getDate() - days)
     console.log(tst.toString())
     if(days == 1){
-        document.getElementById("filter_val").textContent = "show last day"
+        document.getElementById("filter_val").textContent = "the last 24 hours"
     }else{
-        document.getElementById("filter_val").textContent = "show last " + days + " days"
+        document.getElementById("filter_val").textContent = "the last " + days + " days"
     }
     chart.options.axisX.minimum = tst.getTime()
     console.log(chart.axisX.minimum)
@@ -143,7 +143,7 @@ document.getElementById("filterall").addEventListener("click", function() {
                 <div class="row">
                    <div class="col-md-6">
                         <h2 class="panel-title">Water levels in the river Stour</h2>
-                       <h4 id="filter_val">show all time</h4>
+                       <h4 id="filter_val">all time</h4>
                    </div>
                    <div class="col-md-6 text-right">
                        <button id="filter1" type="button" class="btn sm">1 day</button>
