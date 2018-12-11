@@ -93,11 +93,24 @@ function toogleDataSeries(e){
 	chart.render();
 }
 
+function filter_all(){
+    console.log(tst.toString())
+    delete chart.options.axisX.minimum
+    document.getElementById("filter_val").textContent = "show all time"
+    //chart.options.axisX.minimum = tst.getTime()
+    //console.log(chart.axisX.minimum)
+    chart.render()
+}
+
 function filter_by_days_prior(days){
     tst = new Date()
     tst.setDate(tst.getDate() - days)
     console.log(tst.toString())
-
+    if(days == 1){
+        document.getElementById("filter_val").textContent = "show last day"
+    }else{
+        document.getElementById("filter_val").textContent = "show last " + days + " days"
+    }
     chart.options.axisX.minimum = tst.getTime()
     console.log(chart.axisX.minimum)
     chart.render()
@@ -113,6 +126,9 @@ document.getElementById("filter7").addEventListener("click", function() {
 document.getElementById("filter30").addEventListener("click", function() {
     filter_by_days_prior(30)
 }, false);
+document.getElementById("filterall").addEventListener("click", function() {
+    filter_all()
+}, false);
 }
 </script>
 {% endblock %}
@@ -126,12 +142,14 @@ document.getElementById("filter30").addEventListener("click", function() {
            <header class="panel-heading">
                 <div class="row">
                    <div class="col-md-6">
-                        <h2 class="panel-title">Your Subscribed Water levels</h2>
+                        <h2 class="panel-title">Water levels in the river Stour</h2>
+                       <h4 id="filter_val">show all time</h4>
                    </div>
                    <div class="col-md-6 text-right">
                        <button id="filter1" type="button" class="btn sm">1 day</button>
                        <button id="filter7" type="button" class="btn sm">7 days</button>
                        <button id="filter30" type="button" class="btn sm">30 days</button>
+                       <button id="filterall" type="button" class="btn sm">all time</button>
                    </div>
                </div>
            </header>

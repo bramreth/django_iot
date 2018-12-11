@@ -26,11 +26,15 @@ def generate_addresses(data):
         key = "pin_data"
     elif "results" in data:
         key = "results"
-    geolocator = Nominatim(user_agent="specify_your_app_name_here")
-    for d in data[key]:
-        location = geolocator.reverse(str(d['lat']) + "," + str(d['long']))
-        d['location'] = location.raw['address']['building'] + " " + location.raw['address']['road']
-    pass
+    try:
+        geolocator = Nominatim(user_agent="specify_your_app_name_here")
+        for d in data[key]:
+            location = geolocator.reverse(str(d['lat']) + "," + str(d['long']))
+            d['location'] = location.raw['address']['building'] + " " + location.raw['address']['road']
+    except:
+        # if the geocoder times out try again.
+        generate_addresses(data)
+
 
 #made by Max
 def clean_flood_area():
