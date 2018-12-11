@@ -74,10 +74,10 @@ class FloodMonitoringSystemConfig(AppConfig):
                             current_station = stations[station_measures.index(reading['measure'])]
                             print(current_station.station_reference)
                             if not reading['value'] == StationReadings.get_newest("", current_station)["pin_data"][0]["reading"]:
-                                print(current_station.station_reference)
-                                print(str(
-                                    StationReadings.get_newest("", current_station)["pin_data"][0]["reading"]))
-                                print(str(reading['value']))
+                                # print(current_station.station_reference)
+                                # print(str(
+                                #     StationReadings.get_newest("", current_station)["pin_data"][0]["reading"]))
+                                # print(str(reading['value']))
                                 new_reading = StationReadings()
                                 new_reading.station = current_station
                                 new_reading.reading = reading["value"]
@@ -222,10 +222,10 @@ class FloodMonitoringSystemConfig(AppConfig):
         api_base_url = 'https://environment.data.gov.uk/flood-monitoring/'
         query_station_details(api_base_url + "id/stations?riverName=Great%20Stour")
         query_historic_data(api_base_url + "id/stations/", "/readings?_sorted")
-        #remove_station_readings_duplicates()
+        remove_station_readings_duplicates()
         try:
             pass
-            _thread.start_new_thread(query_new_water_levels, ("https://environment.data.gov.uk/flood-monitoring/data/readings?latest", 900))
+            #_thread.start_new_thread(query_new_water_levels, ("https://environment.data.gov.uk/flood-monitoring/data/readings?latest", 900))
             #_thread.start_new_thread(query_flood_warnings, ("https://environment.data.gov.uk/flood-monitoring/id/floods?county=kent", 900))
             #_thread.start_new_thread(query_station_details, (api_base_url + "id/stations?lat=51.296693&long=1.105983&dist=50&parameterName=Water%20Level", 86400))
         except:

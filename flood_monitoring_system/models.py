@@ -234,3 +234,22 @@ class StationReadings(models.Model):
     station = models.ForeignKey(StationInformation, on_delete=models.CASCADE)
     reading = models.FloatField()
     time = models.CharField(max_length=20)
+
+    def get_newest(self, selected_station):
+        newest = StationReadings.objects.all().filter(station=selected_station).order_by('-time')[:1]
+
+        viewdata = {
+            "pin_data": [
+                {
+                    "id": newest[0].station.station_reference,
+                    "label": newest[0].station.label,
+                    "river": newest[0].station.river_name,
+                    "town": newest[0].station.town,
+                    "lat": newest[0].station.lat,
+                    "long": newest[0].station.long,
+                    "reading": newest[0].reading,
+                    "time": newest[0].time
+                }
+            ]
+        }
+        return  viewdata
