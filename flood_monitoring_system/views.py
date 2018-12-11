@@ -39,16 +39,22 @@ def clean_flood_area():
 #=====================================================================================================
 
 #GLOBAL DATA==========================================================================================
+
 query = {}
-query['api_data'] = environmental_agency_flood_data.get_newest("")
-query['api_data_all'] = environmental_agency_flood_data.get_all("")
-convert_from_timestamp(query['api_data'])
-query['sensors'] = MqttWaterLevelData.get_newest("")
-convert_from_timestamp(query['sensors'])
-generate_addresses(query['sensors'])
-query['sensors_all'] = MqttWaterLevelData.get_all("")
-generate_addresses(query['sensors_all'])
-query['notifications'] = Notifications.objects.all().order_by("-time")
+
+def update_dictionaries():
+    print("update view dictionaries for clients in real time")
+    query['api_data'] = environmental_agency_flood_data.get_newest("")
+    query['api_data_all'] = environmental_agency_flood_data.get_all("")
+    convert_from_timestamp(query['api_data'])
+    query['sensors'] = MqttWaterLevelData.get_newest("")
+    convert_from_timestamp(query['sensors'])
+    generate_addresses(query['sensors'])
+    query['sensors_all'] = MqttWaterLevelData.get_all("")
+    generate_addresses(query['sensors_all'])
+    query['notifications'] = Notifications.objects.all().order_by("-time")
+
+
 query['flood_area'] = []
 flood_area_coordinates = [
             [
@@ -1541,6 +1547,7 @@ cookie = {
 
 #VIEW LOADERS=========================================================================================
 def index(request):
+    update_dictionaries()
     page = 'flood_monitoring_system/index.html'
     if is_logged_in(request):
         return render(request, page, {"object_list": query, "cookie": cookie})
@@ -1549,12 +1556,14 @@ def index(request):
 
 
 def notifications(request):
+    update_dictionaries()
     page = 'flood_monitoring_system/error.html'
     if is_logged_in(request):
         page = 'flood_monitoring_system/notifications.html'
     return render(request, page, {"object_list": query, "cookie": cookie})
 
 def test(request):
+    update_dictionaries()
     page = 'flood_monitoring_system/error.html'
     if is_logged_in(request):
         page = 'flood_monitoring_system/test.html'
@@ -1562,6 +1571,7 @@ def test(request):
 
 
 def subscribe(request):
+    update_dictionaries()
     page = 'flood_monitoring_system/error.html'
     # if the form was submitted
     subscriptions = {}
