@@ -1568,8 +1568,10 @@ def subscribe(request):
     msg = ""
     if request.method == "POST":
         post = request.POST
+        print(post)
         user = User.objects.filter(email=cookie['email'])[0]
         station_id = post['station']
+        station_name = post['label']
         #check if already subbed
         rows = Subscriptions.objects.filter(user=user, station=station_id)
         if rows.count() > 0:
@@ -1579,6 +1581,7 @@ def subscribe(request):
             #else add subscription
             sub = Subscriptions()
             sub.station = station_id
+            sub.label = station_name
             sub.user = user
             sub.save()
             msg = "You are now subscribed to this station."

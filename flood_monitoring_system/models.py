@@ -138,6 +138,7 @@ class User(models.Model):
 class Subscriptions(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, null=False, default=False, on_delete=models.CASCADE)
+    label = models.CharField(max_length=50, null=False, default="")
     station = models.CharField(max_length=10)
 
 class Notifications(models.Model):

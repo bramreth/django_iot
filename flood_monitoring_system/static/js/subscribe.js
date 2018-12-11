@@ -1,10 +1,10 @@
 let data= {};
 let data_preview;
-let view_data_btn;
 let station_select;
+let label_input;
 $( document ).ready(function(){
 	$.ajax({
-	   url: "https://environment.data.gov.uk/flood-monitoring/id/stations?_limit=50",
+	   url: "http://environment.data.gov.uk/flood-monitoring/id/stations?_limit=50",
 	   async:false,
 	   success: function (d) {
 		  data = d.items;
@@ -12,8 +12,8 @@ $( document ).ready(function(){
 	});
 
 	station_select = $("#station-select");
-	view_data_btn = $("#view-data-btn");
 	data_preview = $("#data-preview");
+	label_input = $("#label");
 
 	for(let i = 0; i< data.length; i++){
         station_select.append(new Option(data[i].label, data[i].RLOIid));
@@ -36,7 +36,7 @@ $( document ).ready(function(){
     //--------------------------------------------------
 
 	//BUTTON LISTENERS
-    view_data_btn.click(function() {
+    station_select.change(function() {
     	data_preview.empty();
 	  id = station_select.val();
 	  item = {};
@@ -45,6 +45,7 @@ $( document ).ready(function(){
          	item = data[i];
 		 }
 	  }
+	  label_input.val(item.label);
        for (var k in item) {
        	data_preview.append("<li class='list-group-item'><b>"+k+":</b> "+item[k]+"</li>");
        }
