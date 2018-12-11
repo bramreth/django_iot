@@ -165,11 +165,11 @@ document.getElementById("filterall").addEventListener("click", function() {
            </header>
            <div class="panel-body">
                 <ul id="sub-list">
-{#                    FOREACH HERE BRAMBY#}
-{#                        <li class="list-group-item">#}
-{#                            <p><b>[Station]</b> - Last received at: [time]</p>#}
-{#                         </li>#}
-
+                    {% for pin in object_list.map_data.pin_data %}
+                        <li class="list-group-item">
+                                <p><b>{% if pin.label %}{{ pin.label }}{% elif pin.location %}{{ pin.location }}{% endif %}</b> - Last received at: {{ pin.time }}</p>
+                        </li>
+                    {% endfor %}
                  </ul>
            </div>
        </section>

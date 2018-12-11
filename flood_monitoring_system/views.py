@@ -75,9 +75,6 @@ def update_dictionaries():
     #     query['graph_data']["results"].append(graph)
 
 
-
-
-
 query['flood_area'] = []
 flood_area_coordinates = [
             [
