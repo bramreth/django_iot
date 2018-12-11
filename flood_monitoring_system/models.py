@@ -219,3 +219,18 @@ class Notifications(models.Model):
     severity_message = models.CharField(max_length=40)
     time = models.DateTimeField(null=True, auto_now=False, auto_now_add=False)
     read = models.BooleanField(default=False)
+
+class StationInformation(models.Model):
+    station_reference = models.CharField(primary_key=True, max_length=20)
+    RLOIid = models.CharField(max_length=10)
+    measure_id = models.CharField(max_length=200)
+    label = models.CharField(max_length=40)
+    town = models.CharField(max_length=40)
+    river_name = models.CharField(max_length=40)
+    lat = models.DecimalField(max_digits=9, decimal_places=7)
+    long = models.DecimalField(max_digits=10, decimal_places=7)
+
+class StationReadings(models.Model):
+    station = models.ForeignKey(StationInformation, on_delete=models.CASCADE)
+    reading = models.FloatField()
+    time = models.CharField(max_length=20)

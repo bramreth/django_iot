@@ -192,8 +192,86 @@ class FloodMonitoringSystemConfig(AppConfig):
                 print("================================================================================================================")
                 time.sleep(delay)
 
+        def query_station_details(url):
+            from flood_monitoring_system.models import StationInformation
+
+            try:
+                with urllib.request.urlopen(url) as json_url:
+                    httpStatusCode = json_url.getcode()
+                    if httpStatusCode == 200:
+                        station_data = json.loads(json_url.read().decode())
+            except:
+                httpStatusCode = 0;
+            print("================================================================================================================")
+            print("----------------------------------------------------------------------------------------------------------------")
+            if not httpStatusCode == 200:
+                print("No connection to the Environment Agency Real Time flood-monitoring API to gather station data")
+            elif not StationInformation.objects.exists():
+                print("Gathing station data:")
+                for station in station_data["items"]:
+                    if 'RLOIid' in station:
+                        print(station['notation'])
+                        new_station = StationInformation()
+                        new_station.station_reference = station["notation"]
+                        new_station.RLOIid = station["RLOIid"]
+                        new_station.measure_id = station["measures"][0]["@id"]
+                        new_station.label = station["label"]
+                        new_station.river_name = station["riverName"]
+                        new_station.town = station["town"]
+                        new_station.lat = station["lat"]
+                        new_station.long = station["long"]
+                        new_station.save()
+            else:
+                print("Station data in database")
+            print("----------------------------------------------------------------------------------------------------------------")
+            print("================================================================================================================")
+
+        def query_historic_data(url_start, url_end):
+            from flood_monitoring_system.models import StationInformation, StationReadings
+            stations = StationInformation.objects.all()
+            for s in stations:
+                if not StationReadings.objects.filter(station=s.station_reference).exists():
+                    reading_url = url_start + s.station_reference + url_end
+                    print(reading_url)
+                    try:
+                        with urllib.request.urlopen(reading_url) as json_url:
+                            httpStatusCode = json_url.getcode()
+                            if httpStatusCode == 200:
+                                reading_data = json.loads(json_url.read().decode())
+                    except:
+                        httpStatusCode = 0;
+
+                    if not httpStatusCode == 200:
+                        print("Cannot get historic data for station: " + s.station_reference)
+                    else:
+                        for reading in reading_data["items"]:
+                            print(s.station_reference + ": " + str(reading["value"]))
+                            #print(StationInformation.objects.filter(station_reference=s.station_reference)[0])
+                            new_reading = StationReadings()
+                            new_reading.station = StationInformation.objects.filter(station_reference=s.station_reference)[0]
+                            new_reading.reading = reading["value"]
+
+                            dt = "" + reading["dateTime"] + ""  # daytime
+                            d = dt.split("T")[0]  # day
+                            t = dt.split("Z")[0].split("T")[1]  # time
+
+                            new_reading.time = int(time.mktime(time.strptime(d + " " + t, '%Y-%m-%d %H:%M:%S'))) * 1000
+                            new_reading.save()
+
+        def unfuck_station_readings():
+            from flood_monitoring_system.models import StationInformation, StationReadings
+            stations = StationInformation.objects.all()
+            for s in stations:
+                print(s)
+
+        api_base_url = 'https://environment.data.gov.uk/flood-monitoring/'
+        query_station_details(api_base_url + "id/stations?lat=51.296693&long=1.105983&dist=50&parameterName=Water%20Level")
+        query_historic_data(api_base_url + "id/stations/", "/readings?_sorted")
+        unfuck_station_readings()
         try:
-            _thread.start_new_thread(query_environment_api, ("https://environment.data.gov.uk/flood-monitoring/id/stations?RLOIid=1143", 900))
-            _thread.start_new_thread(query_flood_warnings, ("https://environment.data.gov.uk/flood-monitoring/id/floods?county=kent", 900))
+            pass
+            #_thread.start_new_thread(query_environment_api, ("https://environment.data.gov.uk/flood-monitoring/id/stations?RLOIid=1143", 900))
+            #_thread.start_new_thread(query_flood_warnings, ("https://environment.data.gov.uk/flood-monitoring/id/floods?county=kent", 900))
+            #_thread.start_new_thread(query_station_details, (api_base_url + "id/stations?lat=51.296693&long=1.105983&dist=50&parameterName=Water%20Level", 86400))
         except:
             print("Error starting thread")
