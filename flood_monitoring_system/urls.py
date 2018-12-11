@@ -13,5 +13,8 @@ urlpatterns = [
     url(r'^login/$', views.login, name='login'),
     url(r'^logout/$', views.logout, name='logout'),
     url(r'^create-account/$', views.create_account, name='create_account'),
+
+    #get
+    url(r'^get-stations/$', views.get_stations, name='get_stations'),
 ]
 

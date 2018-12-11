@@ -258,24 +258,16 @@ class FloodMonitoringSystemConfig(AppConfig):
                             new_reading.time = int(time.mktime(time.strptime(d + " " + t, '%Y-%m-%d %H:%M:%S'))) * 1000
                             new_reading.save()
 
-        def remove_station_readings_duplicates():
+        def unfuck_station_readings():
             from flood_monitoring_system.models import StationInformation, StationReadings
             stations = StationInformation.objects.all()
             for s in stations:
-                readings = StationReadings.objects.filter(station=s)
-                readings_count = StationReadings.objects.filter(station=s).count()
-                print(s.station_reference + ": " + str(readings_count))
-                previous_reading = -100
-                for r in readings:
-                    if r.reading == previous_reading:
-                        r.delete()
-                    else:
-                        previous_reading = r.reading
+                print(s)
 
         api_base_url = 'https://environment.data.gov.uk/flood-monitoring/'
         query_station_details(api_base_url + "id/stations?lat=51.296693&long=1.105983&dist=50&parameterName=Water%20Level")
         query_historic_data(api_base_url + "id/stations/", "/readings?_sorted")
-        remove_station_readings_duplicates()
+        unfuck_station_readings()
         try:
             pass
             #_thread.start_new_thread(query_environment_api, ("https://environment.data.gov.uk/flood-monitoring/id/stations?RLOIid=1143", 900))
