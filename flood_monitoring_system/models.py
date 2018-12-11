@@ -1,5 +1,5 @@
 from email._header_value_parser import Domain
-
+from _datetime import datetime, timedelta
 from django.db import models
 
 # Create your models here.
@@ -15,14 +15,14 @@ class MqttWaterLevelData(models.Model):
         unique_together = ("time", "hardware_serial")
 
     def get_newest(self):
-        newest = MqttWaterLevelData.objects.order_by('-time')[:1]
+        newest = MqttWaterLevelData.objects.all().order_by('-time')[:1]
         viewdata = {
             "pin_data": [
             ]
         }
-        for name in MqttWaterLevelData.objects.values("hardware_serial").distinct():
+        for name in MqttWaterLevelData.objects.all().values("hardware_serial").distinct():
             print(name["hardware_serial"])
-            newest = MqttWaterLevelData.objects.filter(hardware_serial=name["hardware_serial"]).order_by('-time')[:1]
+            newest = MqttWaterLevelData.objects.all().filter(hardware_serial=name["hardware_serial"]).order_by('-time')[:1]
             viewdata["pin_data"].append({
                     "id": newest[0].hardware_serial,
                     "lat": newest[0].latitude,
@@ -39,8 +39,8 @@ class MqttWaterLevelData(models.Model):
         viewdata = {
             "results": []
         }
-        for name in MqttWaterLevelData.objects.values("hardware_serial").distinct():
-            newest = MqttWaterLevelData.objects.filter(hardware_serial=name["hardware_serial"]).order_by('-time')
+        for name in MqttWaterLevelData.objects.all().values("hardware_serial").distinct():
+            newest = MqttWaterLevelData.objects.all().filter(hardware_serial=name["hardware_serial"]).order_by('-time')
             heights_and_times = []
             for item in newest:
                 heights_and_times.append((item.time, item.river_height_mm))
@@ -53,6 +53,71 @@ class MqttWaterLevelData(models.Model):
         #print(viewdata)
         return viewdata
 
+    def get_between_dates(self, min_time, max_time):
+        viewdata = {
+            "results": []
+        }
+        for name in MqttWaterLevelData.objects.all().values("hardware_serial").distinct():
+            all_for_station = MqttWaterLevelData.objects.all().filter(hardware_serial=name["hardware_serial"]).order_by('-time')
+            heights_and_times = []
+            for item in all_for_station:
+                cur_time = datetime.fromtimestamp(int(item.time[0:10]))
+                if max_time > cur_time > min_time:
+                    heights_and_times.append((item.time, item.river_height_mm))
+            viewdata["results"].append({
+                "id": name,
+                "time_reading": heights_and_times,
+                "lat": all_for_station[0].latitude,
+                "long": all_for_station[0].longitude,
+            })
+
+        return viewdata
+
+
+    def get_presets(self):
+        viewdata = {
+            "day": [],
+            "week": [],
+            "month": []
+        }
+        for name in MqttWaterLevelData.objects.all().values("hardware_serial").distinct():
+            all_for_station = MqttWaterLevelData.objects.all().filter(hardware_serial=name["hardware_serial"]).order_by('-time')
+            day = []
+            week = []
+            month = []
+            for item in all_for_station:
+                cur_time = datetime.fromtimestamp(int(item.time[0:10]))
+                if cur_time > datetime.now() - timedelta(days=30):
+                    month.append((item.time, item.river_height_mm))
+                if cur_time > datetime.now() - timedelta(days=7):
+                    week.append((item.time, item.river_height_mm))
+                if cur_time > datetime.now() - timedelta(days=1):
+                    day.append((item.time, item.river_height_mm))
+
+            viewdata["day"].append({
+                "id": name,
+                "time_reading": day,
+                "lat": all_for_station[0].latitude,
+                "long": all_for_station[0].longitude,
+            })
+
+            viewdata["week"].append({
+                "id": name,
+                "time_reading": week,
+                "lat": all_for_station[0].latitude,
+                "long": all_for_station[0].longitude,
+            })
+
+            viewdata["month"].append({
+                "id": name,
+                "time_reading": month,
+                "lat": all_for_station[0].latitude,
+                "long": all_for_station[0].longitude,
+            })
+
+        return viewdata
+
+
 class environmental_agency_flood_data(models.Model):
     sensor_id = models.CharField(max_length=80)
     label = models.CharField(max_length=40)
@@ -64,7 +129,7 @@ class environmental_agency_flood_data(models.Model):
     time = models.CharField(max_length = 20)
 
     def get_newest(self):
-        newest = environmental_agency_flood_data.objects.order_by('-time')[:1]
+        newest = environmental_agency_flood_data.objects.all().order_by('-time')[:1]
 
         viewdata = {
             "pin_data": [
@@ -83,7 +148,7 @@ class environmental_agency_flood_data(models.Model):
         return viewdata
 
     def get_all(self):
-        newest = environmental_agency_flood_data.objects.order_by('-time')
+        newest = environmental_agency_flood_data.objects.all().order_by('-time')
         viewdata = {
             "results": []
         }
@@ -111,7 +176,7 @@ class test_environmental_agency_flood_data(models.Model):
     station = models.CharField(null=False, default=False, max_length=10)
 
     def get_newest(self):
-        newest = test_environmental_agency_flood_data.objects.order_by('-time')[:1]
+        newest = test_environmental_agency_flood_data.objects.all().order_by('-time')[:1]
 
         viewdata = {
             "pin_data": [

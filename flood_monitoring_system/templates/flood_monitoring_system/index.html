@@ -13,6 +13,7 @@ var chart = new CanvasJS.Chart("chartSensor", {
 	axisX:{
 	    title: "Date and Time",
 		valueFormatString: "DD MMM hh:mm TT",
+
 		crosshair: {
 			enabled: true,
 			snapToDataPoint: true
@@ -64,6 +65,26 @@ function toogleDataSeries(e){
 	chart.render();
 }
 
+function filter_by_days_prior(days){
+    tst = new Date()
+    tst.setDate(tst.getDate() - days)
+    console.log(tst.toString())
+
+    chart.options.axisX.minimum = tst.getTime()
+    console.log(chart.axisX.minimum)
+    chart.render()
+}
+document.getElementById("filter1").addEventListener("click", function() {
+    filter_by_days_prior(1)
+}, false);
+
+document.getElementById("filter7").addEventListener("click", function() {
+    filter_by_days_prior(7)
+}, false);
+
+document.getElementById("filter30").addEventListener("click", function() {
+    filter_by_days_prior(30)
+}, false);
 }
 </script>
 {% endblock %}
@@ -80,6 +101,9 @@ function toogleDataSeries(e){
                    <a href="#" class="fa fa-times"></a>
                </div>
                <h2 class="panel-title">Water levels in the river Stour</h2>
+               <button id="filter1" type="button" class="btn sm">1 day</button>
+               <button id="filter7" type="button" class="btn sm">7 days</button>
+               <button id="filter30" type="button" class="btn sm">30 days</button>
            </header>
            <div class="panel-body">
                 <div id="chartSensor" style="height: 400px; width: 100%;"></div>

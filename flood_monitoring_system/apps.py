@@ -17,7 +17,6 @@ class FloodMonitoringSystemConfig(AppConfig):
 
         def uplink_callback(msg, client):
             try:
-                print("hello?!")
                 from flood_monitoring_system.models import MqttWaterLevelData
                 print("Received uplink from ", msg.dev_id)
                 print("----------------------------------------------------------------------------------------------------------------")
