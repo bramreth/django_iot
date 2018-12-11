@@ -4,16 +4,44 @@
 {% block header %}
 <script src="{% static 'lib/canvasjs-2.2/canvasjs.min.js' %}"></script>
 <script>
+let marker_colours = {
+    0:{
+        "name":"blue",
+        "hex":"#38AADD"
+    },
+    1:{
+        "name":"green",
+        "hex":"#72B026"
+    },
+    2:{
+        "name":"orange",
+        "hex":"#F69730"
+    },
+    3:{
+        "name":"red",
+        "hex":"#D63E2A"
+    },
+    4:{
+        "name":"purple",
+        "hex":"#D152B8"
+    }
+};
 
 window.onload = function () {
-
+CanvasJS.addColorSet("multicolor", [
+    "#38AADD",
+    "#72B026",
+    "#F69730",
+    "#D63E2A",
+    "#D152B8"
+]);
 var chart = new CanvasJS.Chart("chartSensor", {
 	animationEnabled: true,
 	theme: "light2",
+    colorSet:"multicolor",
 	axisX:{
 	    title: "Date and Time",
 		valueFormatString: "DD MMM hh:mm TT",
-
 		crosshair: {
 			enabled: true,
 			snapToDataPoint: true
@@ -37,11 +65,11 @@ var chart = new CanvasJS.Chart("chartSensor", {
 		itemclick: toogleDataSeries
 	},
     data: [
-        {% for device in object_list.sensors_all.results %}
+        {% for device in object_list.graph_data.results %}
             {
                 type: "line",
                 showInLegend: true,
-                name: "{{ device.location}}",
+                name: "{% if device.label %}{{ device.label }}{% elif device.location %}{{ device.location }}{% endif %}",
                 markerType: "square",
                 xValueType: "dateTime",
                 xValueFormatString: "DD MMM hh:mm TT",
@@ -96,14 +124,16 @@ document.getElementById("filter30").addEventListener("click", function() {
     <div class="col-md-12">
        <section class="panel">
            <header class="panel-heading">
-               <div class="panel-actions">
-                   <a href="#" class="fa fa-caret-down"></a>
-                   <a href="#" class="fa fa-times"></a>
+                <div class="row">
+                   <div class="col-md-6">
+                        <h2 class="panel-title">Water levels in the river Stour</h2>
+                   </div>
+                   <div class="col-md-6 text-right">
+                       <button id="filter1" type="button" class="btn sm">1 day</button>
+                       <button id="filter7" type="button" class="btn sm">7 days</button>
+                       <button id="filter30" type="button" class="btn sm">30 days</button>
+                   </div>
                </div>
-               <h2 class="panel-title">Water levels in the river Stour</h2>
-               <button id="filter1" type="button" class="btn sm">1 day</button>
-               <button id="filter7" type="button" class="btn sm">7 days</button>
-               <button id="filter30" type="button" class="btn sm">30 days</button>
            </header>
            <div class="panel-body">
                 <div id="chartSensor" style="height: 400px; width: 100%;"></div>
@@ -115,7 +145,6 @@ document.getElementById("filter30").addEventListener("click", function() {
            <header class="panel-heading">
                <div class="panel-actions">
                    <a href="#" class="fa fa-caret-down"></a>
-                   <a href="#" class="fa fa-times"></a>
                </div>
                <h2 class="panel-title">Live Map</h2>
                <p class="panel-subtitle">Water level data from all over Canterbury. Updates regularly.</p>
@@ -130,7 +159,6 @@ document.getElementById("filter30").addEventListener("click", function() {
            <header class="panel-heading">
                <div class="panel-actions">
                    <a href="#" class="fa fa-caret-down"></a>
-                   <a href="#" class="fa fa-times"></a>
                </div>
                <h2 class="panel-title">Statistics</h2>
                <p class="panel-subtitle">Here's some interesting insights.</p>
@@ -154,5 +182,4 @@ document.getElementById("filter30").addEventListener("click", function() {
     </div>
 </div>
 {% endblock %}
-
 

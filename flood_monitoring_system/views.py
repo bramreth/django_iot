@@ -53,6 +53,25 @@ def update_dictionaries():
     query['sensors_all'] = MqttWaterLevelData.get_all("")
     generate_addresses(query['sensors_all'])
     query['notifications'] = Notifications.objects.all().order_by("-time")
+    #DATA FOR INTERACTIVE MAP
+    query['map_data'] = {"pin_data": []}
+    for pin in query['sensors']["pin_data"]:
+        query['map_data']["pin_data"].append(pin)
+    for pin in query['api_data']["pin_data"]:
+        query['map_data']["pin_data"].append(pin)
+
+    #DATA FOR GRAPH
+    query['graph_data'] = {"results": []}
+
+    for graph in query['sensors_all']["results"]:
+        query['graph_data']["results"].append(graph)
+
+    #max fix pls xoxoxox
+    # for graph in query['api_data_all']["results"]:
+    #     query['graph_data']["results"].append(graph)
+
+
+
 
 
 query['flood_area'] = []
