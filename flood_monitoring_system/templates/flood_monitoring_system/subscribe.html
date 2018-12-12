@@ -6,15 +6,15 @@
 <script src="{% static 'js/subscribe.js' %}"></script>
 {% endblock %}
 
-{% block maintitle %}Subscription Service{% endblock %}
+{% block maintitle %}Manage Your Station Subscriptions{% endblock %}
 
 {% block maincontent %}
 <div class="row">
     <div class="col-md-6 col-sm-6 col-xs-12">
-        <h3>Subscribe to other flood alerts</h3>
+        <h3>Search Stations</h3>
         <form action="" method="post">
             {% csrf_token %}
-            <label>Select from available stations</label>
+            <label>You will also receive local flood alerts close to these stations</label>
             <div class="form-group input-group">
                 <select type="text" class="form-control" id="station-select" name="station">
                     <option selected disabled>--Select Station--</option>
