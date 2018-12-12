@@ -87,6 +87,21 @@ var chart = new CanvasJS.Chart("chartSensor", {
                 ]
             },
         {% endfor %}
+        {% for device in object_list.restful_graph_data.results %}
+            {
+                type: "line",
+                showInLegend: true,
+                name: "{% if device.label %}{{ device.label }}{% elif device.location %}{{ device.location }}{% endif %}",
+                markerType: "square",
+                xValueType: "dateTime",
+                xValueFormatString: "DD MMM hh:mm TT",
+                dataPoints: [
+                    {% for data in device.time_reading %}
+                        {   x:{{data.0}}, y:{{ data.1 }}   },
+                    {% endfor %}
+                ]
+            },
+        {% endfor %}
     ]
 });
 chart.render();

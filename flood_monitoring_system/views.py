@@ -77,7 +77,7 @@ def update_subscriptions(cookie):
     for pin in StationReadings.get_newest_by_cookie("", cookie["id"])["pin_data"]:
         pin['time'] = datetime.fromtimestamp(int(pin['time'][0:10]))  # remove milliseconds
         query['map_data']["pin_data"].append(pin)
-    #query['sensors'] = StationReadings.get_newest_by_cookie("", cookie["id"])
+    query['restful_graph_data'] = StationReadings.get_all_by_cookie("", cookie["id"])
 
 query['flood_area'] = []
 flood_area_coordinates = [
@@ -1712,7 +1712,7 @@ def unsub(request):
     res="{}"
     if request.method == "POST":
         status = "false"
-        post = json.loads(request.body)
+        post = json.loads(request.body.decode())
         msg = "An error occurred whilst unsubscribing. Please try again later."
         #make sure they're logged in
         user = User.objects.filter(email=cookie['email'])
