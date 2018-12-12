@@ -8,8 +8,7 @@ RUN apt install -y python3-pip python-setuptools
 
 RUN mkdir /code
 WORKDIR /code
-ADD requirements.txt /code/
-RUN pip3 install -r requirements.txt
+RUN pip3 install django ttn geopy django-widget-tweaks validate_email
 ADD . /code/
 COPY ./django_iot-master.zip /code
 RUN unzip django_iot-master.zip
