@@ -74,10 +74,12 @@ def update_dictionaries():
     # for graph in query['api_data_all']["results"]:
     #     query['graph_data']["results"].append(graph)
 def update_subscriptions(cookie):
-    for pin in StationReadings.get_newest_by_cookie("", cookie["id"])["pin_data"]:
-        pin['time'] = datetime.fromtimestamp(int(pin['time'][0:10]))  # remove milliseconds
-        query['map_data']["pin_data"].append(pin)
-    query['restful_graph_data'] = StationReadings.get_all_by_cookie("", cookie["id"])
+    results = StationReadings.get_newest_by_cookie("", cookie["id"])["pin_data"]
+    if results:
+        for pin in StationReadings.get_newest_by_cookie("", cookie["id"])["pin_data"]:
+            pin['time'] = datetime.fromtimestamp(int(pin['time'][0:10]))  # remove milliseconds
+            query['map_data']["pin_data"].append(pin)
+        query['restful_graph_data'] = StationReadings.get_all_by_cookie("", cookie["id"])
 
 query['flood_area'] = []
 flood_area_coordinates = [
