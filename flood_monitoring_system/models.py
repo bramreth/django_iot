@@ -279,4 +279,33 @@ class StationReadings(models.Model):
                 }
             ]
         }
-        return  viewdata
+        return viewdata
+
+    def get_all_by_cookie(self, id):
+        subscriptions = Subscriptions.objects.filter(user=id)
+        print(subscriptions)
+        viewdata = {
+            "results": []
+        }
+
+        for item in subscriptions:
+            i = 0
+            print(item.station)
+            station = StationInformation.objects.filter(RLOIid=item.station)
+            newest = StationReadings.objects.filter(station_id=station[0].station_reference).order_by('-time')
+            heights_and_times = []
+            for val in newest:
+                heights_and_times.append((val.time, val.reading * 1000))
+            print()
+            viewdata["results"].append({
+                "id": newest[i].station.label,
+                "time_reading": heights_and_times,
+                "lat": newest[i].station.lat,
+                "long": newest[i].station.long,
+                "label": newest[i].station.label,
+                "river": newest[i].station.river_name,
+                "town": newest[i].station.town,
+            })
+            i+=1
+            print(viewdata["results"])
+        return viewdata
