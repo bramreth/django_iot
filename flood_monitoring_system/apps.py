@@ -99,7 +99,7 @@ class FloodMonitoringSystemConfig(AppConfig):
             from flood_monitoring_system.models import FloodAlerts, FloodArea, User, Subscriptions, StationInformation
             while(1):
                 try:
-                    with urllib.request.urlopen("https://api.myjson.com/bins/1h0hac") as flood_data_url:
+                    with urllib.request.urlopen("https://api.myjson.com/bins/x2vyc") as flood_data_url:
                         httpStatusCode = flood_data_url.getcode()
                         if httpStatusCode == 200:
                             floodData = json.loads(flood_data_url.read().decode())
@@ -115,9 +115,7 @@ class FloodMonitoringSystemConfig(AppConfig):
                     for warning in floodData['items']:
                         if "Great Stour" in warning['floodArea']["riverOrSea"]:
                             floodArea = FloodArea.objects.filter(area_code=warning['floodAreaID'])[0]
-                            print(floodArea.lat)
-                            print(floodArea.long)
-                            print(warning['floodAreaID'])
+
                             for u in User.objects.all():
                                 warningSet = False
                                 for s in Subscriptions.objects.filter(user=u):
@@ -126,9 +124,7 @@ class FloodMonitoringSystemConfig(AppConfig):
                                                                           float(floodArea.long),
                                                                           float(a.lat),
                                                                           float(floodArea.lat)) < 10:
-                                            if not warningSet:
-
-                                                print("Set " + str(warning['floodAreaID']) + " as a warning for " + u.full_name)
+                                            if not warningSet and not FloodAlerts.objects.filter(user=u ,flood_id=warning['@id']):
                                                 new_alert = FloodAlerts()
                                                 new_alert.flood_area = floodArea
                                                 new_alert.user = u
@@ -136,13 +132,12 @@ class FloodMonitoringSystemConfig(AppConfig):
                                                 new_alert.severity_rating = warning['severityLevel']
                                                 new_alert.severity_message = warning['severity']
                                                 new_alert.time = warning['timeRaised']
-                                                print()
+                                                new_alert.flood_id = warning['@id']
                                                 new_alert.save()
                                                 warningSet = True
                                                 sendEmail = True
                 if sendEmail:
-                    pass
-                    #FloodAlerts.send_flood_alert_email("")
+                    FloodAlerts.send_flood_warning_email("")
                 time.sleep(delay)
 
         #Grabs the details for the station at the given url
