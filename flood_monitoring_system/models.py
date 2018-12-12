@@ -335,6 +335,7 @@ class FloodAlerts(models.Model):
     read = models.BooleanField(default=False)
     flood_id = models.CharField(max_length=80, null=True)
 
+    #based on: https://stackoverflow.com/questions/19412462/getting-distance-between-two-points-based-on-latitude-longitude
     def calculate_distance(self, lon1, lon2, lat1, lat2):
         dlon = radians(lon2) - radians(lon1)
         dlat = radians(lat2) - radians(lat1)

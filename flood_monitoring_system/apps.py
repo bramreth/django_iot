@@ -60,9 +60,9 @@ class FloodMonitoringSystemConfig(AppConfig):
                     httpStatusCode = 0;
 
                 if not httpStatusCode == 200:
-                    print(">>Error getting new water level data")
+                    print("Can't connect to: " + url)
                 else:
-                    print(">>Getting new water level data")
+                    print("Getting new water level data")
                     stations = StationInformation.objects.all()
                     station_measures = []
 
@@ -92,14 +92,14 @@ class FloodMonitoringSystemConfig(AppConfig):
                                 # print(new_reading.reading)
                                 # print(new_reading.time)
                                 new_reading.save()
-                    print(">>Water level data updated")
+                    print("Water level data updated")
                     time.sleep(delay)
 
         def query_flood_warnings(url, delay):
             from flood_monitoring_system.models import FloodAlerts, FloodArea, User, Subscriptions, StationInformation
             while(1):
                 try:
-                    with urllib.request.urlopen("https://api.myjson.com/bins/x2vyc") as flood_data_url:
+                    with urllib.request.urlopen(url) as flood_data_url:
                         httpStatusCode = flood_data_url.getcode()
                         if httpStatusCode == 200:
                             floodData = json.loads(flood_data_url.read().decode())
@@ -107,10 +107,9 @@ class FloodMonitoringSystemConfig(AppConfig):
                     httpStatusCode = 0;
 
                 if not httpStatusCode == 200:
-                    print(">>No connection to the Environment Agency Real Time flood-monitoring API to gather flood warnings")
-                elif not floodData['items']:
-                    print(">>No flood warnings")
+                    print("Can't connect to: " + url)
                 else:
+                    print("Getting flood data")
                     sendEmail = False
                     for warning in floodData['items']:
                         if "Great Stour" in warning['floodArea']["riverOrSea"]:
@@ -154,12 +153,11 @@ class FloodMonitoringSystemConfig(AppConfig):
                 httpStatusCode = 0; #No connection
 
             if not httpStatusCode == 200: #Anything other than a 200 will abort the database update
-                print(">>No connection to the Environment Agency Real Time flood-monitoring API to gather station data")
+                print("Can't connect to: " + url)
             else:
-                print(">>Gathing station data:")
+                print("Gathing station data")
                 for station in station_data["items"]:
                     if 'RLOIid' in station and 'measures' in station and not StationInformation.objects.filter(station_reference=station["notation"]).exists():
-                        print(station['notation'])
                         new_station = StationInformation()
                         new_station.station_reference = station["notation"]
                         new_station.RLOIid = station["RLOIid"]
@@ -252,11 +250,9 @@ class FloodMonitoringSystemConfig(AppConfig):
         query_station_details(api_base_url + "id/stations?riverName=Great%20Stour")
         query_historic_data(api_base_url + "id/stations/", "/readings?_sorted")
         get_flood_polygons(api_base_url + "id/floodAreas?county=Kent")
-        # from flood_monitoring_system.models import FloodAlerts
-        # FloodAlerts.send_flood_warning_email("")
+
         #remove_station_readings_duplicates()
         try:
-            pass
             _thread.start_new_thread(query_new_water_levels, ("https://environment.data.gov.uk/flood-monitoring/data/readings?latest", 900))
             _thread.start_new_thread(query_flood_warnings, (api_base_url +"id/floods", 900))
         except:

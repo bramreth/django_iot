@@ -32,6 +32,5 @@ def build_and_send_email(recipient, alerts):
         message += str(alert.time) + "\n"
         message += alert.message + "\n\n"
     message += generic_flood_info
-    print(message)
     send_email(recipient.email, message)
 
