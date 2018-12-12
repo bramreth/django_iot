@@ -1595,60 +1595,83 @@ def test(request):
     if is_logged_in(request):
         page = 'flood_monitoring_system/test.html'
 
-    if request.method == "POST":
-        post = request.POST
-        d_counter = 1
-        s_counter = 1
-        test_graph_data = {"results": []}
-        #GETTING SENSOR DATA
-        while "device-select-"+str(d_counter) in post:
-            device_label = post["device-select-"+str(d_counter)]
-            y =  post["device-water-level-"+str(d_counter)]
-            x = int(time.mktime(time.strptime(post["device-date-"+str(d_counter)], '%d/%m/%Y %H:%M'))) * 1000
-            is_in_there = False
-            for i in test_graph_data['results']:
-                if device_label in i['label']:
-                    is_in_there = True
-            if not is_in_there:
-                test_graph_data['results'].append({
-                    "label": device_label,
-                    "time_reading":[]
-                })
-            for j in test_graph_data['results']:
-                if j['label'] == device_label:
-                    j['time_reading'].append({
-                        0: x,
-                        1:y
+        if request.method == "POST":
+            post = request.POST
+            d_counter = 1
+            s_counter = 1
+            test_graph_data = {"results": []}
+            #GETTING SENSOR DATA
+            while "device-select-"+str(d_counter) in post:
+                device_label = post["device-select-"+str(d_counter)]
+                y = post["device-water-level-"+str(d_counter)]
+                x = int(time.mktime(time.strptime(post["device-date-"+str(d_counter)], '%d/%m/%Y %H:%M'))) * 1000
+                is_in_there = False
+                for i in test_graph_data['results']:
+                    if device_label in i['label']:
+                        is_in_there = True
+                if not is_in_there:
+                    test_graph_data['results'].append({
+                        "label": device_label,
+                        "time_reading":[]
                     })
-            d_counter+=1
+                for j in test_graph_data['results']:
+                    if j['label'] == device_label:
+                        j['time_reading'].append({
+                            0: x,
+                            1: y
+                        })
+                d_counter += 1
 
-        #GETTING STATION DATA
-        while "station-select-"+str(s_counter) in post:
-            station_label = post["station-select-"+str(s_counter)]
-            y = post["station-water-level-"+str(s_counter)]
-            x = int(time.mktime(time.strptime(post["station-date-"+str(s_counter)], '%d/%m/%Y %H:%M'))) * 1000
-            is_in_there = False
-            for i in test_graph_data['results']:
-                if station_label in i['label']:
-                    is_in_there = True
-            if not is_in_there:
-                test_graph_data['results'].append({
-                    "label": station_label,
-                    "time_reading":[]
-                })
-            for j in test_graph_data['results']:
-                if j['label'] == station_label:
-                    j['time_reading'].append({
-                        0: x,
-                        1: y
+            #GETTING STATION DATA
+            while "station-select-"+str(s_counter) in post:
+                station_label = post["station-select-"+str(s_counter)]
+                y = post["station-water-level-"+str(s_counter)]
+                x = int(time.mktime(time.strptime(post["station-date-"+str(s_counter)], '%d/%m/%Y %H:%M'))) * 1000
+                is_in_there = False
+                for i in test_graph_data['results']:
+                    if station_label in i['label']:
+                        is_in_there = True
+                if not is_in_there:
+                    test_graph_data['results'].append({
+                        "label": station_label,
+                        "time_reading":[]
                     })
-            s_counter+=1
+                for j in test_graph_data['results']:
+                    if j['label'] == station_label:
+                        j['time_reading'].append({
+                            0: x,
+                            1: y
+                        })
+                s_counter+=1
+            query['graph_data'] = test_graph_data
+            query['restful_graph_data'] = {}
 
-
-        print(test_graph_data)
-        query['graph_data'] = test_graph_data
-        page = 'flood_monitoring_system/index.html'
-
+            #MAP PIN DATA
+            test_map_data = {"pin_data": []}
+            for data in test_graph_data['results']:
+                label = data['label']
+                t = 0
+                reading = 0
+                lat = 0.0
+                long = 0.0
+                for tr in data['time_reading']:
+                    if t < tr[0]:
+                        t = tr[0]
+                        reading = tr[1]
+                
+                s = StationInformation.objects.filter(label=label)
+                if s.count():
+                    lat = s[0].lat
+                    long = s[0].long
+                test_map_data['pin_data'].append({
+                    "location": label,
+                    "time": t,
+                    "reading": reading,
+                    "lat": lat,
+                    "long": long,
+                })
+            query['map_data'] = test_map_data
+            page = 'flood_monitoring_system/index.html'
 
     return render(request, page, {"object_list": query, "cookie": cookie, "index_title": "Test Stats"})
 

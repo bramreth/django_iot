@@ -244,20 +244,22 @@ class StationReadings(models.Model):
         viewdata = {
             "pin_data": []
         }
-        for item in subscriptions:
-            print(item.station)
-            station = StationInformation.objects.filter(RLOIid=item.station)
-            newest = StationReadings.objects.filter(station_id=station[0].station_reference).order_by('-time')[:1]
-            viewdata["pin_data"].append({
-                "id": newest[0].station.station_reference,
-                    "label": newest[0].station.label,
-                    "river": newest[0].station.river_name,
-                    "town": newest[0].station.town,
-                    "lat": newest[0].station.lat,
-                    "long": newest[0].station.long,
-                    "reading": newest[0].reading,
-                    "time": newest[0].time
-            })
+        if subscriptions.count():
+            for item in subscriptions:
+                print(item.station)
+                station = StationInformation.objects.filter(RLOIid=item.station)
+                print(station.count())
+                newest = StationReadings.objects.filter(station_id=station[0].station_reference).order_by('-time')[:1]
+                viewdata["pin_data"].append({
+                    "id": newest[0].station.station_reference,
+                        "label": newest[0].station.label,
+                        "river": newest[0].station.river_name,
+                        "town": newest[0].station.town,
+                        "lat": newest[0].station.lat,
+                        "long": newest[0].station.long,
+                        "reading": newest[0].reading,
+                        "time": newest[0].time
+                })
 
         return viewdata
 
