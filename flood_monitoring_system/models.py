@@ -333,6 +333,7 @@ class FloodAlerts(models.Model):
     severity_message = models.CharField(max_length=40)
     time = models.DateTimeField(null=True, auto_now=False, auto_now_add=False)
     read = models.BooleanField(default=False)
+    flood_id = models.CharField(max_length=80, null=True)
 
     def calculate_distance(self, lon1, lon2, lat1, lat2):
         dlon = radians(lon2) - radians(lon1)
