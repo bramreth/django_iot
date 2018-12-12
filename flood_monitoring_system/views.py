@@ -8,7 +8,7 @@ from _datetime import datetime, timedelta
 from validate_email import validate_email
 import json,time
 from geopy.geocoders import Nominatim
-from flood_monitoring_system.models import StationReadings, environmental_agency_flood_data, MqttWaterLevelData,  User, Subscriptions,StationInformation,FloodAlerts
+from flood_monitoring_system.models import StationReadings, environmental_agency_flood_data, MqttWaterLevelData,  User, Subscriptions,StationInformation, FloodAlerts
 
 
 #====================================================================================================
@@ -57,12 +57,13 @@ def update_dictionaries():
     query['sensors_all'] = MqttWaterLevelData.get_all("")
     generate_addresses(query['sensors_all'])
 
-    # user = User.objects.filter(email=post['email'])
-    # user_subs = {}
-    # if user.count() > 0:
-    #     user_subs = Subscriptions.objects.filter(user=user[0])
+    user = User.objects.filter(email=cookie['email'])
+    user_subs = {}
+    if user.count() > 0:
+        user_subs = Subscriptions.objects.filter(user=user[0])
 
-    # query['flood_alerts'] = FloodAlerts.objects.filter(user).order_by("-time")
+    query['flood_alerts'] = FloodAlerts.get_alerts("", user_subs)
+    print(query['flood_alerts'])
     #DATA FOR INTERACTIVE MAP
     query['map_data'] = {"pin_data": []}
     for pin in query['sensors']["pin_data"]:
@@ -1824,10 +1825,9 @@ def unsub(request):
     return HttpResponse(res)
 
 def readnotification(request):
-    if request.method == "POST":
-        post = json.loads(request.body.decode())
-        # Notifications.objects.filter(id=post['notification']).update(read=post['read'])
-        return HttpResponse("{'status':true}")
+    post = json.loads(request.body.decode())
+    FloodAlerts.objects.filter(id=post['notification']).update(read=post['read'])
+    return HttpResponse("{'status':true}")
 
 #=====================================================================================================
 

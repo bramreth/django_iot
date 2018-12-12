@@ -1,6 +1,7 @@
 from email._header_value_parser import Domain
 from _datetime import datetime, timedelta
 from django.db import models
+from math import sin, cos, sqrt, atan2, radians
 
 # Create your models here.
 class MqttWaterLevelData(models.Model):
@@ -317,3 +318,49 @@ class FloodAlerts(models.Model):
     severity_message = models.CharField(max_length=40)
     time = models.DateTimeField(null=True, auto_now=False, auto_now_add=False)
     read = models.BooleanField(default=False)
+
+    def calculate_distance(self, lon1, lon2, lat1, lat2):
+        dlon = radians(lon2) - radians(lon1)
+        dlat = radians(lat2) - radians(lat1)
+        R = 3961
+        a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+        c = 2 * atan2(sqrt(a), sqrt(1-a))
+
+        d = R * c
+        return d
+
+    def get_alerts(self, subscriptions):
+        print("SUBSCRIPTIONS")
+        flood_alerts = {
+            "alert_data" : []
+        }
+        alerts = FloodAlerts.objects.all()
+
+        for alert in alerts:
+            #print(sub.station)
+            for sub in subscriptions:
+                station = StationInformation.objects.filter(RLOIid=sub.station)
+                if FloodAlerts.calculate_distance("", float(station[0].long), float(alert.flood_area.long), float(station[0].lat), float(alert.flood_area.lat)) < 10:
+                    flood_alerts['alert_data'].append(
+                        {
+                            "id": alert.id,
+                            'flood_area': alert.flood_area,
+                            'message': alert.message,
+                            'severity_rating': alert.severity_rating,
+                            'severity_message': alert.severity_message,
+                            'time': alert.time,
+                            'read': alert.read
+                        }
+                    )
+                    break
+        print("=======================")
+        return(flood_alerts)
+
+    def send_flood_warning_email(self):
+        from flood_monitoring_system import email_notifications
+        users = User.objects.all()
+        for user in users:
+            user_subs = Subscriptions.objects.filter(user=user)
+            warnings = FloodAlerts.get_alerts("", user_subs)
+
+            email_notifications.build_and_send_email(user, warnings)
