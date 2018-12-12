@@ -1696,11 +1696,6 @@ def test(request):
                 "alert_data": []
             }
             while "flood-area-" + str(counter) in post:
-                print(post["flood-area-" + str(counter)])
-                print(post["severity-rating-" + str(counter)])
-                print(post["severity-message-" + str(counter)])
-                print(str(post["notification-date-" + str(counter)]))
-                print(FloodAlerts.test_alert("", post["flood-area-" + str(counter)], cookie["id"]))
                 if FloodAlerts.test_alert("", post["flood-area-" + str(counter)], cookie["id"]):
                     tmp_alert = FloodAlerts()
                     tmp_alert.label = post["notification-message-1"]
@@ -1713,8 +1708,9 @@ def test(request):
                             'time': post["notification-date-" + str(counter)],
                         }
                     )
-                    print(flood_alerts)
                     FloodAlerts.send_flood_warning_email_from_dict("", cookie["id"], flood_alerts)
+                else:
+                    print("email not sent, user not subscribed to towers within range")
                 counter += 1
     return render(request, page, {"object_list": query, "cookie": cookie, "index_title": "Test Stats"})
 
