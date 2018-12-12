@@ -25,13 +25,13 @@
                     <div class="col-md-1 icon">
                         <i class="fa fa-thumbs-up bg-success"></i>
                     </div>
-        {% elif n.severity_rating  == 1 or n.severity_rating  == 2  %}
+        {% elif n.severity_rating  == 2  %}
             <li class="list-group-item list-group-item-warning notification-list">
                 <div class="row">
                     <div class="col-md-1 icon">
                         <i class="fa fa-exclamation-triangle bg-warning" ></i>
                     </div>
-        {% elif n.severity_rating  == 0 %}
+        {% elif n.severity_rating  == 0 or  n.severity_rating  == 1%}
             <li class="list-group-item list-group-item-danger icon notification-list">
                 <div class="row">
                         <div class="col-md-1 icon">
