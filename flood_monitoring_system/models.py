@@ -208,20 +208,6 @@ class Subscriptions(models.Model):
     label = models.CharField(max_length=50, null=False, default="")
     station = models.CharField(max_length=10)
 
-class Notifications(models.Model):
-    NOTIFICATION_TYPE = (
-        ("MQTT", "MQTT service"),
-        ("REST", "Environment Agency Real Time flood-monitoring API"),
-        ("FLOOD", "Flood warning")
-    )
-    user = models.ForeignKey(User, null=False, default=False, on_delete=models.CASCADE)
-    type = models.CharField(max_length=5, choices=NOTIFICATION_TYPE)
-    message = models.CharField(max_length=1000)
-    severity_rating = models.IntegerField()
-    severity_message = models.CharField(max_length=40)
-    time = models.DateTimeField(null=True, auto_now=False, auto_now_add=False)
-    read = models.BooleanField(default=False)
-
 class StationInformation(models.Model):
     station_reference = models.CharField(primary_key=True, max_length=20)
     RLOIid = models.CharField(max_length=10)
@@ -311,3 +297,23 @@ class StationReadings(models.Model):
             i+=1
             print(viewdata["results"])
         return viewdata
+
+class FloodArea(models.Model):
+    area_code = models.CharField(primary_key=True, max_length=25)
+    label = models.CharField(max_length=100)
+    description = models.CharField(max_length=250)
+    lat = models.DecimalField(max_digits=9, decimal_places=7)
+    long = models.DecimalField(max_digits=10, decimal_places=7)
+
+class FloodAreaPolygon(models.Model):
+    flood_area = models.ForeignKey(FloodArea, on_delete=models.CASCADE)
+    lat = models.DecimalField(max_digits=9, decimal_places=7)
+    long = models.DecimalField(max_digits=10, decimal_places=7)
+
+class FloodAlerts(models.Model):
+    flood_area = models.ForeignKey(FloodArea, on_delete=models.CASCADE)
+    message = models.CharField(max_length=1000)
+    severity_rating = models.IntegerField()
+    severity_message = models.CharField(max_length=40)
+    time = models.DateTimeField(null=True, auto_now=False, auto_now_add=False)
+    read = models.BooleanField(default=False)

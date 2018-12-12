@@ -8,7 +8,7 @@ from _datetime import datetime, timedelta
 from validate_email import validate_email
 import json,time
 from geopy.geocoders import Nominatim
-from flood_monitoring_system.models import StationReadings, environmental_agency_flood_data, MqttWaterLevelData, Notifications, User, Subscriptions,StationInformation
+from flood_monitoring_system.models import StationReadings, environmental_agency_flood_data, MqttWaterLevelData,  User, Subscriptions,StationInformation
 
 
 #====================================================================================================
@@ -56,7 +56,7 @@ def update_dictionaries():
     generate_addresses(query['sensors'])
     query['sensors_all'] = MqttWaterLevelData.get_all("")
     generate_addresses(query['sensors_all'])
-    query['notifications'] = Notifications.objects.all().order_by("-time")
+    # query['notifications'] = Notifications.objects.all().order_by("-time")
     #DATA FOR INTERACTIVE MAP
     query['map_data'] = {"pin_data": []}
     for pin in query['sensors']["pin_data"]:
@@ -1658,7 +1658,7 @@ def test(request):
                     if t < tr[0]:
                         t = tr[0]
                         reading = tr[1]
-                
+
                 s = StationInformation.objects.filter(label=label)
                 if s.count():
                     lat = s[0].lat

@@ -96,7 +96,7 @@ class FloodMonitoringSystemConfig(AppConfig):
                     time.sleep(delay)
 
         def query_flood_warnings(url, delay):
-            from flood_monitoring_system.models import Notifications
+            # from flood_monitoring_system.models import Notifications
             while(1):
                 try:
                     with urllib.request.urlopen(url) as flood_data_url:
