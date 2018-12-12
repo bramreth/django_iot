@@ -22,7 +22,7 @@ $( document ).ready(function(){
 	station_select = $("#station-select-1");
 
 	for(let i = 0; i< data.length; i++){
-        station_select.append(new Option(data[i]['fields'].label, data[i]['fields'].RLOIid));
+        station_select.append(new Option(data[i]['fields'].label, data[i]['fields'].label));
     }
 
 	//SORT-----------------------------------------------

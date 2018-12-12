@@ -4,9 +4,34 @@
 {% block header %}
 <script src="{% static 'lib/canvasjs-2.2/canvasjs.min.js' %}"></script>
 <script>
-
-
 window.onload = function () {
+
+    $(".service-time").each(function() {
+        let str_date = $(this).text()
+        let date = new Date(str_date).getTime();
+        var cur_date = new Date();
+        let diff_date = cur_date - date;
+        let hour = 3600000;
+        let day = 86400000;
+        let list_element = $(this).closest( "li" );
+        let icon = list_element.find(".service-icon");
+        if (diff_date < hour){
+            //good;
+            list_element.addClass("list-group-item-success ");
+            icon.addClass("fas fa-thumbs-up");
+        }else if(diff_date > hour && diff_date < day){
+            //warning
+            list_element.addClass("list-group-item-warning ");
+            icon.addClass("fas fa-thumbs-down");
+        }else if(diff_date > day){
+            //bad
+            list_element.addClass("list-group-item-dangeer ");
+            icon.addClass("fas fa-exclamation-triangle");
+        }
+    });
+
+
+
 CanvasJS.addColorSet("multicolor", [
     "#38AADD",
     "#72B026",
@@ -154,20 +179,27 @@ document.getElementById("filterall").addEventListener("click", function() {
            </div>
        </section>
     </div>
-    <div class="col-md-12">
+    <div class="col-md-6 col-sm-12">
         <section class="panel">
            <header class="panel-heading">
                <div class="panel-actions">
                    <a href="#" class="fa fa-caret-down"></a>
                </div>
-               <h2 class="panel-title">Service availability</h2>
-               <p class="panel-subtitle">See the last time data was retrieved.</p>
+               <h2 class="panel-title">Live Data Reliability</h2>
+               <p class="panel-subtitle">See the last time data was retrieved. Thumbs Up = good, Thumbs down = could be better, Warning Sign = bad.</p>
            </header>
            <div class="panel-body">
                 <ul id="sub-list">
                     {% for pin in object_list.map_data.pin_data %}
                         <li class="list-group-item">
-                                <p><b>{% if pin.label %}{{ pin.label }}{% elif pin.location %}{{ pin.location }}{% endif %}</b> - Last received at: {{ pin.time }}</p>
+                            <div class="row">
+                                <div class="col-md-11">
+                                <p><b>{% if pin.label %}{{ pin.label }}{% elif pin.location %}{{ pin.location }}{% endif %}</b> - Last received at: <span class="service-time" style="display:none;">{{ pin.time | date:"m/d/Y H:i" }}</span>{{ pin.time | date:"d/m/Y H:i" }}</p>
+                                </div>
+                                <div class="col-md-1">
+                                    <i class="service-icon"></i>
+                                </div>
+                            </div>
                         </li>
                     {% endfor %}
                  </ul>
