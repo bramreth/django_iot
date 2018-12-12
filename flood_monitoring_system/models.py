@@ -313,6 +313,7 @@ class FloodAreaPolygon(models.Model):
 
 class FloodAlerts(models.Model):
     flood_area = models.ForeignKey(FloodArea, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     message = models.CharField(max_length=1000)
     severity_rating = models.IntegerField()
     severity_message = models.CharField(max_length=40)
