@@ -141,7 +141,7 @@ class environmental_agency_flood_data(models.Model):
                     "town": newest[0].town,
                     "lat": newest[0].lat,
                     "long": newest[0].long,
-                    "reading": newest[0].reading,
+                    "reading": newest[0].reading*1000,
                     "time": newest[0].time
                 }
             ]
@@ -244,7 +244,7 @@ class StationReadings(models.Model):
                         "town": newest[0].station.town,
                         "lat": newest[0].station.lat,
                         "long": newest[0].station.long,
-                        "reading": newest[0].reading,
+                        "reading": int(newest[0].reading*1000),
                         "time": newest[0].time
                 })
 
