@@ -8,7 +8,7 @@ $( function(){
 let tables = [];
 $( document ).ready(function(){
 //DEFINE TABLES
- tables = ["#station-table", "#sensor-table"];
+ tables = ["#station-table", "#sensor-table", "#alert-table"];
 
 //POPULATE STATIONS SELECT===========================================================
 	$.ajax({
@@ -153,6 +153,7 @@ $( document ).ready(function(){
   	//GENERATE RESULTS
 	$("#gen").click(function() {
 		if(form_is_valid()){
+			console.log("FORM IS VALID");
             $("#test-form").submit();
         }
 	});
@@ -178,6 +179,7 @@ function form_is_valid(){
 	let valid = true;
 	for(var x = 0; x < tables.length; x++) {
         let table = getTableContents(tables[x]);
+        console.log(table);
         for (let i = 0; i < table.length; i++) {
             for (let j = 0; j < table[i].length; j++) {
                 let item = table[i][j];
@@ -191,15 +193,22 @@ function form_is_valid(){
 }
 function validate(item){
 	let valid = true;
-	let type = item.attr('name');
-	if(type == "device"){
+	let type = item.attr('vtype');
+	if(type == "select"){
 		if(!isSelected(item)){
 			valid = false;
 			item.addClass("input-error");
 		}else{
 			item.removeClass("input-error");
 		}
-	}else if(type == "water"){
+	}else if(type == "text"){
+		if(!validateText(item)){
+			valid = false;
+			item.addClass("input-error");
+		}else{
+			item.removeClass("input-error");
+		}
+	}else if(type == "number"){
 		if(!validateNum(item)){
 			valid = false;
 			item.addClass("input-error");
@@ -228,6 +237,10 @@ function validateNum(item){
 	return (num.length >0) && !isNaN(num)
 }
 
+function validateText(item){
+	let txt = item.val();
+	return txt.length > 0
+}
 function isSelected(item){
 	return item.val() !== "" && item.val() !== null ;
 }
