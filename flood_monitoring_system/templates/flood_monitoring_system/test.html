@@ -32,9 +32,13 @@
           <select class="custom-select" name="device-select-1"  id="device-select-1" style="width:100%;">
              <option selected disabled>--Select Device--</option>
               {% for device in object_list.sensors_all.results %}
-                   <option >{{ device.location  }}</option>
+                   <option>{{ device.location  }}</option>
               {% endfor %}
           </select>
+            {% for device in object_list.sensors_all.results %}
+                  <input type="hidden" name="{{ device.location  }}long" value="{{ device.long  }}"/>
+                  <input type="hidden" name="{{ device.location  }}lat" value="{{ device.lat  }}"/>
+            {% endfor %}
       </td>
       <td>
           <input type="number" name="device-water-level-1" id="device-water-level-1" class="form-control" placeholder="1000">

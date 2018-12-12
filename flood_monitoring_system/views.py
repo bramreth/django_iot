@@ -1628,6 +1628,10 @@ def test(request):
                 y = post["station-water-level-"+str(s_counter)]
                 x = int(time.mktime(time.strptime(post["station-date-"+str(s_counter)], '%d/%m/%Y %H:%M'))) * 1000
                 is_in_there = False
+                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                print(post[station_label + "lat"])
+                print(post[station_label + "long"])
+                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                 for i in test_graph_data['results']:
                     if station_label in i['label']:
                         is_in_there = True
@@ -1663,6 +1667,10 @@ def test(request):
                 if s.count():
                     lat = s[0].lat
                     long = s[0].long
+                else:
+                    #it is likely an mqtt device
+                    lat = post[label + "lat"]
+                    long = post[label + "long"]
                 test_map_data['pin_data'].append({
                     "location": label,
                     "time": t,
