@@ -8,7 +8,7 @@ from _datetime import datetime, timedelta
 from validate_email import validate_email
 import json,time
 from geopy.geocoders import Nominatim
-from flood_monitoring_system.models import environmental_agency_flood_data, MqttWaterLevelData, Notifications, User, Subscriptions,StationInformation
+from flood_monitoring_system.models import StationReadings, environmental_agency_flood_data, MqttWaterLevelData, Notifications, User, Subscriptions,StationInformation
 
 
 #====================================================================================================
@@ -18,7 +18,7 @@ from flood_monitoring_system.models import environmental_agency_flood_data, Mqtt
 def convert_from_timestamp(data):
     for pin in data['pin_data']:
         pin['time'] = datetime.fromtimestamp(int(pin['time'][0:10])) #remove milliseconds
-    pass
+
 #made by sam
 def generate_addresses(data):
     key = ""
@@ -73,7 +73,11 @@ def update_dictionaries():
     #max fix pls xoxoxox
     # for graph in query['api_data_all']["results"]:
     #     query['graph_data']["results"].append(graph)
-
+def update_subscriptions(cookie):
+    for pin in StationReadings.get_newest_by_cookie("", cookie["id"])["pin_data"]:
+        pin['time'] = datetime.fromtimestamp(int(pin['time'][0:10]))  # remove milliseconds
+        query['map_data']["pin_data"].append(pin)
+    #query['sensors'] = StationReadings.get_newest_by_cookie("", cookie["id"])
 
 query['flood_area'] = []
 flood_area_coordinates = [
@@ -1570,6 +1574,7 @@ def index(request):
     update_dictionaries()
     page = 'flood_monitoring_system/index.html'
     if is_logged_in(request):
+        update_subscriptions(cookie)
         return render(request, page, {"object_list": query, "cookie": cookie, "index_title": "Live Stats"})
     else:
         return login(request)
