@@ -6,7 +6,7 @@ from django.core import serializers
 from django.shortcuts import render
 from _datetime import datetime, timedelta
 from validate_email import validate_email
-import json
+import json,time
 from geopy.geocoders import Nominatim
 from flood_monitoring_system.models import environmental_agency_flood_data, MqttWaterLevelData, Notifications, User, Subscriptions,StationInformation
 
@@ -1570,7 +1570,7 @@ def index(request):
     update_dictionaries()
     page = 'flood_monitoring_system/index.html'
     if is_logged_in(request):
-        return render(request, page, {"object_list": query, "cookie": cookie})
+        return render(request, page, {"object_list": query, "cookie": cookie, "index_title": "Live Stats"})
     else:
         return login(request)
 
@@ -1587,7 +1587,63 @@ def test(request):
     page = 'flood_monitoring_system/error.html'
     if is_logged_in(request):
         page = 'flood_monitoring_system/test.html'
-    return render(request, page, {"object_list": query, "cookie": cookie})
+
+    if request.method == "POST":
+        post = request.POST
+        d_counter = 1
+        s_counter = 1
+        test_graph_data = {"results": []}
+        #GETTING SENSOR DATA
+        while "device-select-"+str(d_counter) in post:
+            device_label = post["device-select-"+str(d_counter)]
+            y =  post["device-water-level-"+str(d_counter)]
+            x = int(time.mktime(time.strptime(post["device-date-"+str(d_counter)], '%d/%m/%Y %H:%M'))) * 1000
+            is_in_there = False
+            for i in test_graph_data['results']:
+                if device_label in i['label']:
+                    is_in_there = True
+            if not is_in_there:
+                test_graph_data['results'].append({
+                    "label": device_label,
+                    "time_reading":[]
+                })
+            for j in test_graph_data['results']:
+                if j['label'] == device_label:
+                    j['time_reading'].append({
+                        0: x,
+                        1:y
+                    })
+            d_counter+=1
+
+        #GETTING STATION DATA
+        while "station-select-"+str(s_counter) in post:
+            station_label = post["station-select-"+str(s_counter)]
+            y = post["station-water-level-"+str(s_counter)]
+            x = int(time.mktime(time.strptime(post["station-date-"+str(s_counter)], '%d/%m/%Y %H:%M'))) * 1000
+            is_in_there = False
+            for i in test_graph_data['results']:
+                if station_label in i['label']:
+                    is_in_there = True
+            if not is_in_there:
+                test_graph_data['results'].append({
+                    "label": station_label,
+                    "time_reading":[]
+                })
+            for j in test_graph_data['results']:
+                if j['label'] == station_label:
+                    j['time_reading'].append({
+                        0: x,
+                        1: y
+                    })
+            s_counter+=1
+
+
+        print(test_graph_data)
+        query['graph_data'] = test_graph_data
+        page = 'flood_monitoring_system/index.html'
+
+
+    return render(request, page, {"object_list": query, "cookie": cookie, "index_title": "Test Stats"})
 
 
 def subscribe(request):

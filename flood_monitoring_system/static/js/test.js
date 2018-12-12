@@ -1,7 +1,7 @@
 $( function(){
-	$( "#device-date-1" ).datetimepicker();
-	$( "#station-date-1" ).datetimepicker();
-	$( "#notification-date-1" ).datetimepicker();
+	$( "#device-date-1" ).datetimepicker({dateFormat:'dd/mm/yy'});
+	$( "#station-date-1" ).datetimepicker({dateFormat:'dd/mm/yy'});
+	$( "#notification-date-1" ).datetimepicker({dateFormat:'dd/mm/yy'});
 
 	$( "#stats" ).hide();
 });
@@ -102,7 +102,7 @@ $( document ).ready(function(){
 			dateInputs[i].on('focus', function(){
 			  if(!$(this).data('datepickerclass')) {
 			   $(this).removeClass("hasDatepicker");
-			   $(this).datetimepicker();
+			   $(this).datetimepicker({dateFormat:'dd/mm/yy'});
 			   $(this).datetimepicker("show");
 			  }
 			});
@@ -153,10 +153,8 @@ $( document ).ready(function(){
   	//GENERATE RESULTS
 	$("#gen").click(function() {
 		if(form_is_valid()){
-            console.log("yes");
-        }else{
-			console.log("no");
-		}
+            $("#test-form").submit();
+        }
 	});
 
 
