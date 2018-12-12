@@ -345,30 +345,25 @@ class FloodAlerts(models.Model):
         d = R * c
         return d
 
-    def get_alerts(self, subscriptions):
+    def get_alerts(self, u):
         print("SUBSCRIPTIONS")
         flood_alerts = {
-            "alert_data" : []
+            "alert_data": []
         }
-        alerts = FloodAlerts.objects.all()
+        alerts = FloodAlerts.objects.filter(user=u[0])
 
         for alert in alerts:
-            #print(sub.station)
-            for sub in subscriptions:
-                station = StationInformation.objects.filter(RLOIid=sub.station)
-                if FloodAlerts.calculate_distance("", float(station[0].long), float(alert.flood_area.long), float(station[0].lat), float(alert.flood_area.lat)) < 10:
-                    flood_alerts['alert_data'].append(
-                        {
-                            "id": alert.id,
-                            'flood_area': alert.flood_area,
-                            'message': alert.message,
-                            'severity_rating': alert.severity_rating,
-                            'severity_message': alert.severity_message,
-                            'time': alert.time,
-                            'read': alert.read
-                        }
-                    )
-                    break
+            flood_alerts['alert_data'].append(
+                {
+                    "id": alert.id,
+                    'flood_area': alert.flood_area,
+                    'message': alert.message,
+                    'severity_rating': alert.severity_rating,
+                    'severity_message': alert.severity_message,
+                    'time': alert.time,
+                    'read': alert.read
+                }
+            )
         print("=======================")
         return(flood_alerts)
 
@@ -385,11 +380,11 @@ class FloodAlerts(models.Model):
     def send_flood_warning_email(self):
         from flood_monitoring_system import email_notifications
         users = User.objects.all()
-        for user in users:
-            user_subs = Subscriptions.objects.filter(user=user)
-            warnings = FloodAlerts.get_alerts("", user_subs)
+        for u in users:
+            alerts = FloodAlerts.objects.filter(user=u, read=False)
 
-            email_notifications.build_and_send_email(user, warnings)
+            if alerts.exists():
+                email_notifications.build_and_send_email(u, alerts)
 
     def send_flood_warning_email_from_dict(self, user, dict):
         from flood_monitoring_system import email_notifications

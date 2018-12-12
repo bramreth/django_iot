@@ -62,13 +62,13 @@ def update_dictionaries():
     query['sensors_all'] = MqttWaterLevelData.get_all("")
     generate_addresses(query['sensors_all'])
 
-    user = User.objects.filter(email=cookie['email'])
-    user_subs = {}
-    if user.count() > 0:
-        user_subs = Subscriptions.objects.filter(user=user[0])
 
-    query['flood_alerts'] = FloodAlerts.get_alerts("", user_subs)
-    print(query['flood_alerts'])
+    user = User.objects.filter(email=cookie['email'])
+    if user.exists():
+        print(user)
+        query['flood_alerts'] = FloodAlerts.get_alerts("", user)
+
+    #print(query['flood_alerts'])
     #DATA FOR INTERACTIVE MAP
     query['map_data'] = {"pin_data": []}
     for pin in query['sensors']["pin_data"]:
