@@ -107,31 +107,15 @@ class FloodMonitoringSystemConfig(AppConfig):
                     httpStatusCode = 0;
 
                 if not httpStatusCode == 200:
-                    print("================================================================================================================")
-                    print("----------------------------------------------------------------------------------------------------------------")
-                    print("No connection to the Environment Agency Real Time flood-monitoring API to gather flood warnings")
+                    print(">>No connection to the Environment Agency Real Time flood-monitoring API to gather flood warnings")
                     #DO SOMETHING HERE TO SAVE THIS FACT IN THE NOTIFICATIONS DB
                 elif not floodData['items']:
-                    print("================================================================================================================")
-                    print("----------------------------------------------------------------------------------------------------------------")
-                    print("No flood warnings")
+                    print(">>No flood warnings")
                 else:
-                    print("================================================================================================================")
-                    print("----------------------------------------------------------------------------------------------------------------")
-                    print("Found flood warnings:")
+                    print(">>Found flood warnings")
                     for warning in floodData['items']:
-                        print(warning['description'])
-                        if warning['description'] == "The Great Stour at Canterbury":
-                            Warning = Notifications()
-                            Warning.type = "FLOOD"
-                            Warning.message = warning['message']
-                            Warning.severity_rating = warning['severityLevel']
-                            Warning.severity_message = warning['severity']
-                            Warning.time = warning['timeRaised']
-                            Warning.save()
-                            print("Flood warning saved")
-                print("----------------------------------------------------------------------------------------------------------------")
-                print("================================================================================================================")
+                        if "Great Stour" in warning['floodArea']["riverOrSea"]:
+                            print(warning['floodArea']["riverOrSea"])
                 time.sleep(delay)
 
         #Grabs the details for the station at the given url
@@ -219,14 +203,30 @@ class FloodMonitoringSystemConfig(AppConfig):
                     else:
                         previous_reading = r.reading
 
+        def get_flood_polygons(url):
+            try:
+                with urllib.request.urlopen(url) as json_url:
+                    httpStatusCode = json_url.getcode()
+                    if httpStatusCode == 200: #only try to load the json if there is a connection
+                        flood_areas_data = json.loads(json_url.read().decode())
+            except:
+                httpStatusCode = 0; #No connection
+
+            if not httpStatusCode == 200:
+                print("Flood areas data not accessible")
+            else:
+                for area in flood_areas_data['items']:
+                    if "Great Stour" in area['riverOrSea']:
+                        print(area['@id'])
+
         api_base_url = 'https://environment.data.gov.uk/flood-monitoring/'
         query_station_details(api_base_url + "id/stations?riverName=Great%20Stour")
         query_historic_data(api_base_url + "id/stations/", "/readings?_sorted")
+        get_flood_polygons(api_base_url + "id/floodAreas?county=Kent")
         #remove_station_readings_duplicates()
         try:
             pass
             _thread.start_new_thread(query_new_water_levels, ("https://environment.data.gov.uk/flood-monitoring/data/readings?latest", 900))
-            #_thread.start_new_thread(query_flood_warnings, ("https://environment.data.gov.uk/flood-monitoring/id/floods?county=kent", 900))
-            #_thread.start_new_thread(query_station_details, (api_base_url + "id/stations?lat=51.296693&long=1.105983&dist=50&parameterName=Water%20Level", 86400))
+            _thread.start_new_thread(query_flood_warnings, (api_base_url +"id/floods", 900))
         except:
             print("Error starting thread")
