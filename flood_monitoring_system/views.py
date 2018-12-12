@@ -8,7 +8,7 @@ from _datetime import datetime, timedelta
 from validate_email import validate_email
 import json,time
 from geopy.geocoders import Nominatim
-from flood_monitoring_system.models import StationReadings, environmental_agency_flood_data, MqttWaterLevelData, Notifications, User, Subscriptions,StationInformation
+from flood_monitoring_system.models import StationReadings, environmental_agency_flood_data, MqttWaterLevelData,  User, Subscriptions,StationInformation, FloodAlerts
 
 
 #====================================================================================================
@@ -56,7 +56,14 @@ def update_dictionaries():
     generate_addresses(query['sensors'])
     query['sensors_all'] = MqttWaterLevelData.get_all("")
     generate_addresses(query['sensors_all'])
-    query['notifications'] = Notifications.objects.all().order_by("-time")
+
+    user = User.objects.filter(email=cookie['email'])
+    user_subs = {}
+    if user.count() > 0:
+        user_subs = Subscriptions.objects.filter(user=user[0])
+
+    query['flood_alerts'] = FloodAlerts.get_alerts("", user_subs)
+    print(query['flood_alerts'])
     #DATA FOR INTERACTIVE MAP
     query['map_data'] = {"pin_data": []}
     for pin in query['sensors']["pin_data"]:
@@ -1582,11 +1589,11 @@ def index(request):
         return login(request)
 
 
-def notifications(request):
+def alerts(request):
     update_dictionaries()
     page = 'flood_monitoring_system/error.html'
     if is_logged_in(request):
-        page = 'flood_monitoring_system/notifications.html'
+        page = 'flood_monitoring_system/alerts.html'
     return render(request, page, {"object_list": query, "cookie": cookie})
 
 def test(request):
@@ -1662,7 +1669,7 @@ def test(request):
                     if t < tr[0]:
                         t = tr[0]
                         reading = tr[1]
-                
+
                 s = StationInformation.objects.filter(label=label)
                 if s.count():
                     lat = s[0].lat
@@ -1827,7 +1834,7 @@ def unsub(request):
 
 def readnotification(request):
     post = json.loads(request.body.decode())
-    Notifications.objects.filter(id=post['notification']).update(read=post['read'])
+    FloodAlerts.objects.filter(id=post['notification']).update(read=post['read'])
     return HttpResponse("{'status':true}")
 
 #=====================================================================================================

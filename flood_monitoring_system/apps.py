@@ -96,7 +96,7 @@ class FloodMonitoringSystemConfig(AppConfig):
                     time.sleep(delay)
 
         def query_flood_warnings(url, delay):
-            from flood_monitoring_system.models import Notifications
+            from flood_monitoring_system.models import FloodAlerts, FloodArea
             while(1):
                 try:
                     with urllib.request.urlopen(url) as flood_data_url:
@@ -108,14 +108,23 @@ class FloodMonitoringSystemConfig(AppConfig):
 
                 if not httpStatusCode == 200:
                     print(">>No connection to the Environment Agency Real Time flood-monitoring API to gather flood warnings")
-                    #DO SOMETHING HERE TO SAVE THIS FACT IN THE NOTIFICATIONS DB
                 elif not floodData['items']:
                     print(">>No flood warnings")
                 else:
-                    print(">>Found flood warnings")
+                    sendEmail = False
                     for warning in floodData['items']:
                         if "Great Stour" in warning['floodArea']["riverOrSea"]:
-                            print(warning['floodArea']["riverOrSea"])
+                            print(">>Found flood warning")
+                            new_alert = FloodAlerts()
+                            new_alert.flood_area = FloodArea.objects.filter(area_code=warning['floodAreaID'])[0]
+                            new_alert.message = warning['message']
+                            new_alert.severity_rating = warning['severityLevel']
+                            new_alert.severity_message = warning['severity']
+                            new_alert.time = warning['timeRaised']
+                            new_alert.save()
+                            sendEmail = True
+                if sendEmail:
+                    FloodAlerts.send_flood_alert_email("")
                 time.sleep(delay)
 
         #Grabs the details for the station at the given url
@@ -133,10 +142,10 @@ class FloodMonitoringSystemConfig(AppConfig):
 
             if not httpStatusCode == 200: #Anything other than a 200 will abort the database update
                 print(">>No connection to the Environment Agency Real Time flood-monitoring API to gather station data")
-            elif not StationInformation.objects.exists(): #No data on the given station in the database
+            else:
                 print(">>Gathing station data:")
                 for station in station_data["items"]:
-                    if 'RLOIid' in station and 'measures' in station:
+                    if 'RLOIid' in station and 'measures' in station and not StationInformation.objects.filter(station_reference=station["notation"]).exists():
                         print(station['notation'])
                         new_station = StationInformation()
                         new_station.station_reference = station["notation"]
@@ -148,8 +157,6 @@ class FloodMonitoringSystemConfig(AppConfig):
                         new_station.lat = station["lat"]
                         new_station.long = station["long"]
                         new_station.save()
-            else:
-                print(">>Station data in database")
 
         #Digs for the last couple weeks of data from the stations stored in the database and adds the data to the readings database
         def query_historic_data(url_start, url_end):
@@ -204,6 +211,8 @@ class FloodMonitoringSystemConfig(AppConfig):
                         previous_reading = r.reading
 
         def get_flood_polygons(url):
+            from flood_monitoring_system.models import FloodArea, FloodAreaPolygon
+
             try:
                 with urllib.request.urlopen(url) as json_url:
                     httpStatusCode = json_url.getcode()
@@ -216,13 +225,22 @@ class FloodMonitoringSystemConfig(AppConfig):
                 print("Flood areas data not accessible")
             else:
                 for area in flood_areas_data['items']:
-                    if "Great Stour" in area['riverOrSea']:
-                        print(area['@id'])
+                    if "Great Stour" in area['riverOrSea'] and not FloodArea.objects.filter(area_code=area['fwdCode']).exists():
+                        print("Added flood area: " + area['fwdCode'])
+                        flood_area = FloodArea()
+                        flood_area.area_code = area['fwdCode']
+                        flood_area.label = area['label']
+                        flood_area.description = area['description']
+                        flood_area.lat = area['lat']
+                        flood_area.long = area['long']
+                        flood_area.save()
 
         api_base_url = 'https://environment.data.gov.uk/flood-monitoring/'
         query_station_details(api_base_url + "id/stations?riverName=Great%20Stour")
         query_historic_data(api_base_url + "id/stations/", "/readings?_sorted")
         get_flood_polygons(api_base_url + "id/floodAreas?county=Kent")
+        # from flood_monitoring_system.models import FloodAlerts
+        # FloodAlerts.send_flood_warning_email("")
         #remove_station_readings_duplicates()
         try:
             pass

@@ -60,7 +60,7 @@
             {% for pin in object_list.map_data.pin_data %}
                  var markerColor = L.AwesomeMarkers.icon({
                      icon:"",
-                     markerColor: marker_colours[({{ forloop.counter}}-1)%5].name
+                     markerColor: marker_colours[({{ forloop.counter}}-1)%8].name
                 });
                 var marker = L.marker([{{ pin.lat }}, {{ pin.long }}], {icon: markerColor}).addTo(mymap).bindPopup("<b>{% if pin.label %}{{ pin.label }}{% elif pin.location %}{{ pin.location }}{% endif %}<br/>Reading:</b> {{ pin.reading }}mm<br/> <b>Time:</b> {{ pin.time }}");
             {% endfor %}
