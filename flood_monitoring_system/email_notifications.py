@@ -2,6 +2,11 @@ import smtplib
 user = 'kentwaterupdates@gmail.com'
 password = 'wghkerzlmhiwuhaj'
 
+generic_flood_info = "For more information on the flood warning codes and what to do in a flood: https://flood-warning-information.service.gov.uk/what-to-do-in-a-flood.\n" \
+                     "More information on what to do in the event of a flood from the fire service: https://www.fireservice.co.uk/safety/flood-advice/.\n" \
+                     "For more information on how to make your home more secure against flooding: https://environmentagency.blog.gov.uk/2016/11/11/make-your-home-more-flood-resilient/.\n" \
+                     "\n- Kent Water Updates"
+
 def send_email(recipient, message):
     try:
         server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
@@ -24,7 +29,7 @@ def build_and_send_email(recipient, alerts):
         message += alert["severity_message"] + "\n"
         message += str(alert["time"]) + "\n"
         message += alert["message"] + "\n\n"
-    message += "- Kent Water Updates"
+    message += generic_flood_info
     print(message)
     send_email(recipient.email, message)
 

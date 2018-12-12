@@ -113,6 +113,7 @@ class FloodMonitoringSystemConfig(AppConfig):
                 else:
                     sendEmail = False
                     for warning in floodData['items']:
+                        print(warning['timeRaised'])
                         if "Great Stour" in warning['floodArea']["riverOrSea"]:
                             print(">>Found flood warning")
                             new_alert = FloodAlerts()
