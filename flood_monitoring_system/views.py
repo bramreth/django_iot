@@ -82,6 +82,7 @@ def update_dictionaries():
     # for graph in query['api_data_all']["results"]:
     #     query['graph_data']["results"].append(graph)
 def update_subscriptions(cookie):
+    query['restful_graph_data'] = {}
     results = StationReadings.get_newest_by_cookie("", cookie["id"])["pin_data"]
     if results:
         for pin in StationReadings.get_newest_by_cookie("", cookie["id"])["pin_data"]:
