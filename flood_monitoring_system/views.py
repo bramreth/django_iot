@@ -16,8 +16,13 @@ from flood_monitoring_system.models import FloodArea, StationReadings, environme
 #MISC FUNCTIONS======================================================================================
 #Made by sam
 def convert_from_timestamp(data):
+    print("===================================")
+    print(data)
     for pin in data['pin_data']:
-        pin['time'] = datetime.fromtimestamp(int(pin['time'][0:10])) #remove milliseconds
+        print(pin)
+        t = str(pin['time'])[0:10]
+        print(t)
+        pin['time'] = datetime.fromtimestamp(int(t)) #remove milliseconds
 
 #made by sam
 def generate_addresses(data):
@@ -1631,16 +1636,13 @@ def test(request):
                         })
                 d_counter += 1
 
+            print(post)
             #GETTING STATION DATA
             while "station-select-"+str(s_counter) in post:
                 station_label = post["station-select-"+str(s_counter)]
                 y = post["station-water-level-"+str(s_counter)]
                 x = int(time.mktime(time.strptime(post["station-date-"+str(s_counter)], '%d/%m/%Y %H:%M'))) * 1000
                 is_in_there = False
-                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                print(post[station_label + "lat"])
-                print(post[station_label + "long"])
-                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                 for i in test_graph_data['results']:
                     if station_label in i['label']:
                         is_in_there = True
@@ -1687,6 +1689,7 @@ def test(request):
                     "lat": lat,
                     "long": long,
                 })
+            convert_from_timestamp(test_map_data)
             query['map_data'] = test_map_data
             page = 'flood_monitoring_system/index.html'
             counter = 1
