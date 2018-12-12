@@ -16,6 +16,8 @@
 
 {% block maincontent %}
 <h2>Data from Sensors</h2>
+<form id="test-form" method="post" action="">
+{% csrf_token %}
 <table id="sensor-table" class="table">
   <thead>
     <tr>
@@ -27,18 +29,18 @@
   <tbody>
     <tr>
       <td>
-          <select class="custom-select" id="device-select-1" style="width:100%;">
+          <select class="custom-select" name="device-select-1"  id="device-select-1" style="width:100%;">
              <option selected disabled>--Select Device--</option>
               {% for device in object_list.sensors_all.results %}
-                   <option >{{ device.id.hardware_serial  }}</option>
+                   <option >{{ device.location  }}</option>
               {% endfor %}
           </select>
       </td>
       <td>
-          <input type="number" id="device-water-level-1" class="form-control" placeholder="1000">
+          <input type="number" name="device-water-level-1" id="device-water-level-1" class="form-control" placeholder="1000">
       </td>
       <td>
-          <input type="text" id="device-date-1" class="form-control"  placeholder="DD/MM/YYY hh:mm">
+          <input type="text" name="device-date-1" id="device-date-1" class="form-control"  placeholder="DD/MM/YYY hh:mm">
       </td>
       <td>
          <div class="form-group">
@@ -68,15 +70,15 @@
   <tbody>
     <tr>
       <td>
-          <select class="custom-select" id="station-select-1" style="width:100%;">
+          <select class="custom-select" name="station-select-1" id="station-select-1" style="width:100%;">
              <option selected disabled>--Select Device--</option>
           </select>
       </td>
       <td>
-          <input type="number" id="station-waterlevel-1" class="form-control" placeholder="1000">
+          <input type="number" name="station-water-level-1" id="station-waterlevel-1" class="form-control" placeholder="1000">
       </td>
       <td>
-          <input type="text" id="station-date-1" class="form-control"  placeholder="DD/MM/YYY hh:mm">
+          <input type="text" name="station-date-1" id="station-date-1" class="form-control"  placeholder="DD/MM/YYY hh:mm">
       </td>
       <td>
          <div class="form-group">
@@ -150,8 +152,8 @@
   </tfoot>
 </table>
 
-<p class="btn btn-primary btn-lg" id="gen">Generate Statistics</p>
-
+<input type="button" class="btn btn-primary btn-lg" id="gen" value="Generate">
+</form>
 <div id="stats">
 <div class="row">
     <div class="col-md-12">

@@ -6,9 +6,9 @@ from django.core import serializers
 from django.shortcuts import render
 from _datetime import datetime, timedelta
 from validate_email import validate_email
-import json
+import json,time
 from geopy.geocoders import Nominatim
-from flood_monitoring_system.models import StationReadings, environmental_agency_flood_data, MqttWaterLevelData, Notifications, User, Subscriptions,StationInformation
+from flood_monitoring_system.models import StationReadings, environmental_agency_flood_data, MqttWaterLevelData,  User, Subscriptions,StationInformation
 
 
 #====================================================================================================
@@ -56,13 +56,13 @@ def update_dictionaries():
     generate_addresses(query['sensors'])
     query['sensors_all'] = MqttWaterLevelData.get_all("")
     generate_addresses(query['sensors_all'])
-    query['notifications'] = Notifications.objects.all().order_by("-time")
+    # query['notifications'] = Notifications.objects.all().order_by("-time")
     #DATA FOR INTERACTIVE MAP
     query['map_data'] = {"pin_data": []}
     for pin in query['sensors']["pin_data"]:
         query['map_data']["pin_data"].append(pin)
-    for pin in query['api_data']["pin_data"]:
-        query['map_data']["pin_data"].append(pin)
+    #for pin in query['api_data']["pin_data"]:
+     #   query['map_data']["pin_data"].append(pin)
 
     #DATA FOR GRAPH
     query['graph_data'] = {"results": []}
@@ -1577,7 +1577,7 @@ def index(request):
     page = 'flood_monitoring_system/index.html'
     if is_logged_in(request):
         update_subscriptions(cookie)
-        return render(request, page, {"object_list": query, "cookie": cookie})
+        return render(request, page, {"object_list": query, "cookie": cookie, "index_title": "Live Stats"})
     else:
         return login(request)
 
@@ -1594,7 +1594,86 @@ def test(request):
     page = 'flood_monitoring_system/error.html'
     if is_logged_in(request):
         page = 'flood_monitoring_system/test.html'
-    return render(request, page, {"object_list": query, "cookie": cookie})
+
+        if request.method == "POST":
+            post = request.POST
+            d_counter = 1
+            s_counter = 1
+            test_graph_data = {"results": []}
+            #GETTING SENSOR DATA
+            while "device-select-"+str(d_counter) in post:
+                device_label = post["device-select-"+str(d_counter)]
+                y = post["device-water-level-"+str(d_counter)]
+                x = int(time.mktime(time.strptime(post["device-date-"+str(d_counter)], '%d/%m/%Y %H:%M'))) * 1000
+                is_in_there = False
+                for i in test_graph_data['results']:
+                    if device_label in i['label']:
+                        is_in_there = True
+                if not is_in_there:
+                    test_graph_data['results'].append({
+                        "label": device_label,
+                        "time_reading":[]
+                    })
+                for j in test_graph_data['results']:
+                    if j['label'] == device_label:
+                        j['time_reading'].append({
+                            0: x,
+                            1: y
+                        })
+                d_counter += 1
+
+            #GETTING STATION DATA
+            while "station-select-"+str(s_counter) in post:
+                station_label = post["station-select-"+str(s_counter)]
+                y = post["station-water-level-"+str(s_counter)]
+                x = int(time.mktime(time.strptime(post["station-date-"+str(s_counter)], '%d/%m/%Y %H:%M'))) * 1000
+                is_in_there = False
+                for i in test_graph_data['results']:
+                    if station_label in i['label']:
+                        is_in_there = True
+                if not is_in_there:
+                    test_graph_data['results'].append({
+                        "label": station_label,
+                        "time_reading":[]
+                    })
+                for j in test_graph_data['results']:
+                    if j['label'] == station_label:
+                        j['time_reading'].append({
+                            0: x,
+                            1: y
+                        })
+                s_counter+=1
+            query['graph_data'] = test_graph_data
+            query['restful_graph_data'] = {}
+
+            #MAP PIN DATA
+            test_map_data = {"pin_data": []}
+            for data in test_graph_data['results']:
+                label = data['label']
+                t = 0
+                reading = 0
+                lat = 0.0
+                long = 0.0
+                for tr in data['time_reading']:
+                    if t < tr[0]:
+                        t = tr[0]
+                        reading = tr[1]
+
+                s = StationInformation.objects.filter(label=label)
+                if s.count():
+                    lat = s[0].lat
+                    long = s[0].long
+                test_map_data['pin_data'].append({
+                    "location": label,
+                    "time": t,
+                    "reading": reading,
+                    "lat": lat,
+                    "long": long,
+                })
+            query['map_data'] = test_map_data
+            page = 'flood_monitoring_system/index.html'
+
+    return render(request, page, {"object_list": query, "cookie": cookie, "index_title": "Test Stats"})
 
 
 def subscribe(request):
@@ -1703,6 +1782,11 @@ def create_account(request):
             user.email = email
             user.password = hashlib.sha256(password.encode('utf-8')).hexdigest()
             user.save()
+            sub = Subscriptions()
+            sub.user = user
+            sub.station = 1143
+            sub.label = "Vauxhall Bridge"
+            sub.save()
             msg_good += "Your account has been created Successfully. "
     if is_logged_in(request):
         page = 'flood_monitoring_system/error.html'
