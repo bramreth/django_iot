@@ -61,8 +61,8 @@ def update_dictionaries():
     query['map_data'] = {"pin_data": []}
     for pin in query['sensors']["pin_data"]:
         query['map_data']["pin_data"].append(pin)
-    for pin in query['api_data']["pin_data"]:
-        query['map_data']["pin_data"].append(pin)
+    #for pin in query['api_data']["pin_data"]:
+     #   query['map_data']["pin_data"].append(pin)
 
     #DATA FOR GRAPH
     query['graph_data'] = {"results": []}
@@ -1782,6 +1782,11 @@ def create_account(request):
             user.email = email
             user.password = hashlib.sha256(password.encode('utf-8')).hexdigest()
             user.save()
+            sub = Subscriptions()
+            sub.user = user
+            sub.station = 1143
+            sub.label = "Vauxhall Bridge"
+            sub.save()
             msg_good += "Your account has been created Successfully. "
     if is_logged_in(request):
         page = 'flood_monitoring_system/error.html'
