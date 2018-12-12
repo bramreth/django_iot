@@ -50,27 +50,19 @@
                            <div class="dropdown-menu notification-menu">
                                <div class="notification-title">
                                    <span class="pull-right label label-default">3</span>
-                                   Alerts
+                                   Flood Alerts
                                </div>
                                <div class="content">
                                    <ul>
                                        <li>
                                            <a href="#" class="clearfix">
                                                <div class="image">
-                                                   {% if object_list.notifications.0.severity_rating == 0 or object_list.notifications.0.severity_rating == 1 %}
-                                                       <i class="fa fa-thumbs-up bg-success"></i>
-                                                   {% elif object_list.notifications.0.severity_rating == 2 or object_list.notifications.0.severity_rating == 3 %}
-                                                       <i class="fa fa-exclamation-triangle bg-warning"></i>
-                                                   {% elif object_list.notifications.0.severity_rating == 4 %}
-                                                        <i class="fa fa-thumbs-down bg-danger"></i>
-                                                   {% else %}
-                                                        <i class="fa fa-bell bg-danger"></i>
+                                                   <i class="fa fa-thumbs-up bg-success"></i>
 
-                                                   {% endif  %}
 
                                                </div>
-                                               <span class="title">{{ object_list.notifications.0.severity_message }}</span>
-                                               <span class="message">{{ object_list.notifications.0.time }}</span>
+                                               <span class="title">TITLE</span>
+                                               <span class="message">MSG</span>
                                            </a>
                                        </li>
                                     <li>
@@ -114,7 +106,7 @@
                                    </ul>
                                    <hr />
                                    <div class="text-right">
-                                       <a href="/notifications" class="view-more">View All</a>
+                                       <a href="/alerts/" class="view-more">View All</a>
                                    </div>
                                </div>
                            </div>
@@ -148,9 +140,9 @@
                                    </a>
                                </li>
                                <li>
-                                   <a href="/notifications/">
+                                   <a href="/alerts/">
                                    <i class="fas fa-bell" aria-hidden="true"></i>
-                                   <span>Notifications</span>
+                                   <span>Flood Alerts</span>
                                    </a>
                                </li>
                                <li>
