@@ -8,7 +8,7 @@ from _datetime import datetime, timedelta
 from validate_email import validate_email
 import json,time
 from geopy.geocoders import Nominatim
-from flood_monitoring_system.models import StationReadings, environmental_agency_flood_data, MqttWaterLevelData,  User, Subscriptions,StationInformation, FloodAlerts
+from flood_monitoring_system.models import FloodArea, StationReadings, environmental_agency_flood_data, MqttWaterLevelData,  User, Subscriptions,StationInformation, FloodAlerts
 
 
 #====================================================================================================
@@ -77,6 +77,7 @@ def update_dictionaries():
     for graph in query['sensors_all']["results"]:
         query['graph_data']["results"].append(graph)
 
+    query['flood_areas'] = FloodArea.get_all("")
     #max fix pls xoxoxox
     # for graph in query['api_data_all']["results"]:
     #     query['graph_data']["results"].append(graph)
@@ -1687,7 +1688,33 @@ def test(request):
                 })
             query['map_data'] = test_map_data
             page = 'flood_monitoring_system/index.html'
+            counter = 1
+            print("flood alerts")
 
+            flood_alerts = {
+                "alert_data": []
+            }
+            while "flood-area-" + str(counter) in post:
+                print(post["flood-area-" + str(counter)])
+                print(post["severity-rating-" + str(counter)])
+                print(post["severity-message-" + str(counter)])
+                print(str(post["notification-date-" + str(counter)]))
+                print(FloodAlerts.test_alert("", post["flood-area-" + str(counter)], cookie["id"]))
+                if FloodAlerts.test_alert("", post["flood-area-" + str(counter)], cookie["id"]):
+                    tmp_alert = FloodAlerts()
+                    tmp_alert.label = post["notification-message-1"]
+                    flood_alerts['alert_data'].append(
+                        {
+                            'flood_area': tmp_alert,#FloodAlerts.objects.filter(post["flood-area-" + str(counter)])[0].flood_area,
+                            'message': post["notification-message-1"],
+                            'severity_rating': post["severity-rating-" + str(counter)],
+                            'severity_message': post["severity-message-" + str(counter)],
+                            'time': post["notification-date-" + str(counter)],
+                        }
+                    )
+                    print(flood_alerts)
+                    FloodAlerts.send_flood_warning_email_from_dict("", cookie["id"], flood_alerts)
+                counter += 1
     return render(request, page, {"object_list": query, "cookie": cookie, "index_title": "Test Stats"})
 
 

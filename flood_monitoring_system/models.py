@@ -306,6 +306,20 @@ class FloodArea(models.Model):
     lat = models.DecimalField(max_digits=9, decimal_places=7)
     long = models.DecimalField(max_digits=10, decimal_places=7)
 
+    def get_all(self):
+        newest = FloodArea.objects.all()
+        viewdata = {
+            "results": []
+        }
+        heights_and_times = []
+        for item in newest:
+            viewdata["results"].append({
+                "area": item.area_code,
+                "descr": item.description,
+                "label": item.label,
+            })
+        return viewdata
+
 class FloodAreaPolygon(models.Model):
     flood_area = models.ForeignKey(FloodArea, on_delete=models.CASCADE)
     lat = models.DecimalField(max_digits=9, decimal_places=7)
@@ -357,6 +371,16 @@ class FloodAlerts(models.Model):
         print("=======================")
         return(flood_alerts)
 
+    def test_alert(self, alert_id, user):
+        area = FloodArea.objects.filter(area_code=alert_id)
+        subscriptions = Subscriptions.objects.filter(user_id=user)
+        for sub in subscriptions:
+            station = StationInformation.objects.filter(RLOIid=sub.station)
+            if FloodAlerts.calculate_distance("", float(station[0].long), float(area[0].long),
+                                              float(station[0].lat), float(area[0].lat)) < 10:
+                return True
+        return False
+
     def send_flood_warning_email(self):
         from flood_monitoring_system import email_notifications
         users = User.objects.all()
@@ -365,3 +389,8 @@ class FloodAlerts(models.Model):
             warnings = FloodAlerts.get_alerts("", user_subs)
 
             email_notifications.build_and_send_email(user, warnings)
+
+    def send_flood_warning_email_from_dict(self, user, dict):
+        from flood_monitoring_system import email_notifications
+        usr = User.objects.filter(id=user)
+        email_notifications.build_and_send_email(usr[0], dict)
