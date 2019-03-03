@@ -10,10 +10,10 @@ class FloodMonitoringSystemConfig(AppConfig):
 
     def ready(self):
 
-        app_id = "kentwatersensors"
-        access_key = "ttn-account-v2.mRzaS7HOchwKsQxdj1zD-KwjxXAptb7s9pca78Nv7_U"
-        port = "1883"
-        address = "lora.kent.ac.uk" #"eu.thethings.network"
+        app_id = "redacted"
+        access_key = "redacted"
+        port = "redacted"
+        address = "redacted" #"eu.thethings.network"
 
         def uplink_callback(msg, client):
             try:
